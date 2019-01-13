@@ -1,0 +1,79 @@
+const Composer = require('telegraf/composer')
+const composer = new Composer()
+const {
+  getChapter
+} = require('../mangadex')
+const { storeHistory, templates } = require('../lib')
+
+const getFiles = require('../lib/get-files')
+
+composer.action(/chapter=(\S+):prev=(\S+):next=(\S+):offset=(\S+?):(\S+)/i, async ctx => {
+  const chapterId = ctx.match[1]
+  const prevChapterId = ctx.match[2]
+  const nextChapterId = ctx.match[3]
+  const offset = ctx.match[4]
+  const history = ctx.match[5]
+  // console.log(chapterId)
+  let chapter = await getChapter(chapterId)
+  chapter = await getFiles(chapter, ctx)
+  if (!chapter) { return }
+  // const navigation = [
+  //   {
+  //     text: buttons.page.locate(`${chapter.volume ? `Vol. ${chapter.volume} ` : ''}Ch. ${chapter.chapter}`),
+  //     callback_data: ctx.match[0]
+  //   }
+  // ]
+
+  // if (prevChapterId !== 'null') {
+  //   navigation.unshift(
+  //     {
+  //       text: buttons.page.prev(`Previous chapter`),
+  //       callback_data: `chapterread=${prevChapterId}:id=${chapter.id}:offset=${offset}:${history}`
+  //     }
+  //   )
+  // }
+  // in progress
+  // if (nextChapterId !== 'null') {
+  //   navigation.push(
+  //     {
+  //       text: buttons.page.prev(`Next chapter`),
+  //       callback_data: `chapterread=${nextChapterId}:id=${chapter.id}:offset=${offset}:${history}`
+  //     }
+  //   )
+  // }
+  const keyboard = [
+    // navigation,
+    [
+      {
+        text: 'Desktop Instant View',
+        url: chapter.telegraph
+      }
+    ],
+    [
+      {
+        text: 'Choose chapter',
+        callback_data: `chapterlist=${chapter.lang_code}:id=${chapter.manga_id}:offset=${offset}:${history}`
+      }
+    ],
+    [
+      {
+        text: 'Return to manga',
+        callback_data: `manga=${chapter.manga_id}:${history}`
+      }
+    ]
+  ]
+  // console.log(ctx.callbackQuery.message)
+  let messageText = `<a href="https://mangadex.org/chapter/${chapter.id}">Read on Mangadex</a>`
+  messageText += `${chapter.title ? `\n<b>Chapter title:</b> ${chapter.title}` : ''}\n${storeHistory(ctx.callbackQuery.message)}`
+  messageText += `<b>Updated: ${templates.date()}</b>`
+  ctx.editMessageText(messageText, {
+    parse_mode: 'HTML',
+    reply_markup: {
+      inline_keyboard: keyboard
+    }
+  })
+})
+
+module.exports = app => {
+  app.use(composer.middleware())
+}
