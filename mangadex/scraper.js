@@ -31,11 +31,13 @@ module.exports = html => {
 
   const lastPage = new URL(content('body > div#content > nav > ul').children('li:last-of-type').attr('href'), 'https://mangadex.org')
 
-  searchResult.last_page = Number.parseInt(lastPage.searchParams.get('p'))
+  // console.log(lastPage)
+  searchResult.last_page = Number.parseInt(lastPage.searchParams.get('p')) || undefined
 
   const firstPage = new URL(content('body > div#content > nav > ul').children('li:first-of-type').attr('href'), 'https://mangadex.org')
+  // console.log(firstPage)
 
-  searchResult.firse_page = Number.parseInt(firstPage.searchParams.get('p'))
+  searchResult.firse_page = Number.parseInt(firstPage.searchParams.get('p')) || undefined
 
   return searchResult
 }

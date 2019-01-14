@@ -1,16 +1,14 @@
 const Composer = require('telegraf/composer')
 const composer = new Composer()
-const {
-  getChapter
-} = require('../mangadex')
-const { storeHistory, templates } = require('../lib')
+const { getChapter } = require('../mangadex')
+const { templates } = require('../lib')
 
 const getFiles = require('../lib/get-files')
 
 composer.action(/chapter=(\S+):prev=(\S+):next=(\S+):offset=(\S+?):(\S+)/i, async ctx => {
   const chapterId = ctx.match[1]
-  const prevChapterId = ctx.match[2]
-  const nextChapterId = ctx.match[3]
+  // const prevChapterId = ctx.match[2]
+  // const nextChapterId = ctx.match[3]
   const offset = ctx.match[4]
   const history = ctx.match[5]
   // console.log(chapterId)
@@ -51,21 +49,19 @@ composer.action(/chapter=(\S+):prev=(\S+):next=(\S+):offset=(\S+?):(\S+)/i, asyn
     ],
     [
       {
-        text: 'Choose chapter',
+        text: 'Chapter list',
         callback_data: `chapterlist=${chapter.lang_code}:id=${chapter.manga_id}:offset=${offset}:${history}`
       }
     ],
     [
       {
-        text: 'Return to manga',
+        text: 'Manga description',
         callback_data: `manga=${chapter.manga_id}:${history}`
       }
     ]
   ]
   // console.log(ctx.callbackQuery.message)
-  let messageText = `<a href="https://mangadex.org/chapter/${chapter.id}">Read on Mangadex</a>`
-  messageText += `${chapter.title ? `\n<b>Chapter title:</b> ${chapter.title}` : ''}\n${storeHistory(ctx.callbackQuery.message)}`
-  messageText += `<b>Updated: ${templates.date()}</b>`
+  const messageText = templates.manga.chapter(chapter, ctx.callbackQuery.message)
   ctx.editMessageText(messageText, {
     parse_mode: 'HTML',
     reply_markup: {

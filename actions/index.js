@@ -4,4 +4,5 @@ module.exports = app => {
   require('./inline-query')(app)
   require('./chapter-page')(app)
   require('./chapter-list')(app)
+  require('./delete')(app)
 }

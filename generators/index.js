@@ -1,9 +1,11 @@
 const { templates, buttons } = require('../lib')
 const searchKeyboard = require('./search-keyboard')
 const mangaView = require('./manga-view')
+const mangaSearchView = require('./manga-search-view')
 module.exports = {
   searchKeyboard,
   mangaView,
+  mangaSearchView,
   async searchMangaKeyboard (title, params = {}) {
     const searchParams = Object.assign({
       p: 1

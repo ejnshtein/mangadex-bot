@@ -1,20 +1,9 @@
-const { AllHtmlEntities } = require('html-entities')
 const { getManga } = require('../mangadex')
-const { loadMangaGenre, getStatus, groupBy, loadLangCode, buttons, templates } = require('../lib')
-const { decode } = new AllHtmlEntities()
+const { templates, groupBy, loadLangCode, buttons } = require('../lib')
 
-const { parseInt } = Number
-module.exports = async (mangaId, queryUrl, history) => {
+module.exports = async (mangaId, queryUrl = 'https://mangadex.org/?page=search&title=', history = 'p=1:o=0') => {
   const { manga, chapter } = await getManga(mangaId)
-  let messageText = `<a href="https://mangadex.org${manga.cover_url}">&#160;</a>\n<a href="https://mangadex.org/title/${mangaId}">${decode(manga.title)}</a>\n`
-  messageText += `<b>Author:</b> <a href="https://mangadex.org/?page=search&author=${manga.author}">${manga.author}</a>\n`
-  messageText += `<b>Artist:</b> <a href="https://mangadex.org/?page=search&artist=${manga.artist}">${manga.artist}</a>\n`
-  messageText += `<b>Genres:</b> ${manga.genres.map(genreId => `<a href="https://mangadex.org/genre/${genreId}">${loadMangaGenre(genreId).label}</a>`).join(', ')}\n`
-  messageText += `<b>Pub. status:</b> ${getStatus(manga.status)}\n`
-  messageText += `<b>Language:</b> ${manga.lang_name}\n`
-  messageText += `${manga.hentai ? `<b>Hentai-manga</b>\n` : ''}`
-  messageText += `<a href="${queryUrl}">&#160;</a>`
-  messageText += `\n<b>Updated: ${templates.date(new Date())}</b>`
+  const messageText = templates.manga.view(mangaId, manga, queryUrl)
 
   const chapters = groupBy(Object.keys(chapter).map(id => ({ ...chapter[id], id })), 'lang_code')
   const keyboard = [[]]
@@ -39,15 +28,6 @@ module.exports = async (mangaId, queryUrl, history) => {
       callback_data: `manga=${mangaId}:${history}`
     }
   ])
-  // console.log(keyboard)
-  // for (const code of Object.keys(chapters)) {
-  //   const page = chapters[code][0]
-  //   if (keyboard[keyboard.length - 1].length < 5) {
-  //     keyboard[keyboard.length - 1]
-  //   } else {
-  //     keyboard.push([page])
-  //   }
-  // }
   return {
     manga,
     chapter,

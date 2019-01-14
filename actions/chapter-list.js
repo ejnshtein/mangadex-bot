@@ -3,9 +3,10 @@ const composer = new Composer()
 const {
   getManga
 } = require('../mangadex')
-const { buttons } = require('../lib')
+const { buttons, templates, getUrlInMessage } = require('../lib')
 
 composer.action(/chapterlist=(\S+):id=(\S+):offset=(\S+?):(\S+)/i, async ctx => {
+  ctx.answerCbQuery('')
   const lang = ctx.match[1]
   const mangaId = ctx.match[2]
   const offset = Number.parseInt(ctx.match[3])
@@ -13,7 +14,7 @@ composer.action(/chapterlist=(\S+):id=(\S+):offset=(\S+?):(\S+)/i, async ctx => 
 
   // console.log(lang, mangaId, offset)
 
-  const { chapter } = await getManga(mangaId)
+  const { chapter, manga } = await getManga(mangaId)
 
   const chapters = Object.keys(chapter).map(id => ({ ...chapter[id], id })).filter(el => el.lang_code === lang)
   chapters.sort((a, b) => Number.parseFloat(a.chapter) - Number.parseFloat(b.chapter))
@@ -51,16 +52,19 @@ composer.action(/chapterlist=(\S+):id=(\S+):offset=(\S+?):(\S+)/i, async ctx => 
   }
 
   // console.log(keyboard)
-  ctx.editMessageReplyMarkup({
-    inline_keyboard: [
-      [
-        {
-          text: 'Return to manga',
-          callback_data: `manga=${mangaId}:${history}`
-        }
-      ],
-      navigation
-    ].concat(keyboard)
+  ctx.editMessageText(templates.manga.view(mangaId, manga, getUrlInMessage(ctx.callbackQuery.message).url), {
+    parse_mode: 'HTML',
+    reply_markup: {
+      inline_keyboard: [
+        [
+          {
+            text: 'Manga description',
+            callback_data: `manga=${mangaId}:${history}`
+          }
+        ],
+        navigation
+      ].concat(keyboard)
+    }
   })
 })
 

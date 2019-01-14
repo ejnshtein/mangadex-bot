@@ -1,24 +1,27 @@
 {
   "name": "mangadex_bot",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "version": "2.0.0",
+  "description": "telegram-bot for reading manga on mangadex right in telegram",
+  "main": "app.js",
   "dependencies": {
     "axios": "^0.18.0",
     "cheerio": "^1.0.0-rc.2",
     "dotenv": "^6.2.0",
     "form-data": "^2.3.3",
     "html-entities": "^1.2.1",
-    "mongoose": "^5.4.1",
+    "mongoose": "^5.4.4",
     "sharp": "^0.21.1",
     "telegra.ph": "^0.2.0",
-    "telegraf": "^3.25.5"
+    "telegraf": "^3.26.0"
   },
-  "devDependencies": {},
   "scripts": {
     "start": "node app"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "manga",
+    "mangadex",
+    "telegram bot"
+  ],
+  "author": "ejnshtein",
   "license": "ISC"
 }
