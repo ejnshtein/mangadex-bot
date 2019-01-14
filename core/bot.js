@@ -2,6 +2,7 @@
 const Telegraf = require('telegraf')
 const bot = new Telegraf(process.env.BOT_TOKEN)
 const collection = require('./database')
+const logger = require('./database/logger')
 
 bot.telegram.getMe()
   .then(botInfo => {
@@ -9,6 +10,8 @@ bot.telegram.getMe()
   })
 
 bot.context.db = collection
+
+bot.use(logger())
 
 module.exports = {
   bot

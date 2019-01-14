@@ -26,7 +26,9 @@ composer.start(async ctx => {
   // console.log(ctx.match)
   // console.log(extra.reply_markup.inline_keyboard)
   }
-  ctx.reply(`Hello!\nI'm <a href="https://mangadex.org">Mangadex</a> bot.\nI can send to you chapters from your favorite manga right here, in Telegram*!\n\n*Telegra.ph + Instant view on mobile, and just telegra.ph links for desktop version.`)
+  ctx.reply(`Hello!\nI'm <a href="https://mangadex.org">Mangadex</a> bot.\nI can send to you chapters from your favorite manga right here, in Telegram*!\n\n*Telegra.ph + Instant view on mobile, and just telegra.ph links for desktop version.`, {
+    parse_mode: 'HTML'
+  })
 })
 
 module.exports = app => {

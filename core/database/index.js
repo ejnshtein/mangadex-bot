@@ -17,10 +17,8 @@ const collections = [
   {
     name: 'users',
     schema: new Schema({
-      id: {
-        type: Number,
-        unique: true
-      }
+      id: { type: Number, unique: true },
+      last_update: { type: Date, default: () => Date.now() }
     }, {
       timestamps: {
         updatedAt: 'updated_at',
