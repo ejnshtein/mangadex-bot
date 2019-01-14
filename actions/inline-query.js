@@ -10,9 +10,7 @@ composer.on('inline_query', async ctx => {
   let { offset } = ctx.inlineQuery
   offset = offset ? Number.parseInt(offset) : 1
   // console.log(query, offset)
-  const searchResult = await search('title', query, { p: offset })
-
-  // console.log(searchResult, searchResult.titles)
+  const searchResult = await search(query, 'title', { p: offset })
 
   const result = searchResult.titles.map(title => {
     return {
