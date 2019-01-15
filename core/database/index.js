@@ -18,7 +18,11 @@ const collections = [
     name: 'users',
     schema: new Schema({
       id: { type: Number, unique: true },
-      last_update: { type: Date, default: () => Date.now() }
+      username: { type: String, required: false },
+      first_name: { type: String, required: false },
+      last_name: { type: String, required: false },
+      last_update: { type: Date, default: () => Date.now() },
+      favorite_titles: { type: [Number], default: [], required: false }
     }, {
       timestamps: {
         updatedAt: 'updated_at',
@@ -37,6 +41,8 @@ const collections = [
         type: String,
         required: true
       },
+      manga_id: { type: Number, required: false },
+      manga_title: { type: String, required: false },
       timestamp: Number
     }, {
       timestamps: {
