@@ -3,7 +3,7 @@ const composer = new Composer()
 const {
   getManga
 } = require('../mangadex')
-const { buttons, storeHistory, templates } = require('../lib')
+// const { buttons, storeHistory, templates } = require('../lib')
 
 composer.action(/chapterread=(\S+):id=(\S+):offset=(\S+):(\S+)/i, async ctx => {
   const lang = ctx.match[1]

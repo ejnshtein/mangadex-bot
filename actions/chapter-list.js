@@ -52,7 +52,7 @@ composer.action(/chapterlist=(\S+):id=(\S+):offset=(\S+?):(\S+)/i, async ctx => 
   }
 
   // console.log(keyboard)
-  ctx.editMessageText(templates.manga.view(mangaId, manga, getUrlInMessage(ctx.callbackQuery.message).url), {
+  ctx.editMessageText(templates.manga.view(mangaId, manga, getUrlInMessage(ctx.callbackQuery.message)), {
     parse_mode: 'HTML',
     reply_markup: {
       inline_keyboard: [

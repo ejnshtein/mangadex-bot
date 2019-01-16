@@ -3,7 +3,7 @@ const composer = new Composer()
 const { onlyPrivate } = require('../middlewares')
 const { mangaSearchView } = require('../generators')
 
-composer.hears(/\/search (\S+)/i, onlyPrivate, async ctx => {
+composer.hears(/\/search ([\S\s]+)/i, onlyPrivate, async ctx => {
   const query = ctx.match[1]
   const { text, extra } = await mangaSearchView(query)
   ctx.reply(text, extra)

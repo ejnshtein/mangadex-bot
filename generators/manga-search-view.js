@@ -69,9 +69,8 @@ module.exports = async (query = '', page = 1, offset = 0) => {
     )
   }
   keyboard.unshift(pageLine)
-  const searchUrl = 'https://mangadex.org/?page=search&title='
   return {
-    text: templates.searchText(searchUrl, query, 1, 0),
+    text: templates.searchText(`https://mangadex.org/search?title=${query}`, query, 1, 0),
     extra: {
       reply_markup: {
         inline_keyboard: keyboard
