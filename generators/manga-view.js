@@ -1,7 +1,7 @@
-const { getManga } = require('../mangadex')
+const { getManga } = require('mangadex-api')
 const { templates, groupBy, loadLangCode, buttons } = require('../lib')
 
-module.exports = async (mangaId, queryUrl = 'https://mangadex.org/?page=search&title=', history = 'p=1:o=0') => {
+module.exports = async (mangaId, queryUrl = 'https://mangadex.org/search?title=', history = 'p=1:o=0') => {
   const { manga, chapter } = await getManga(mangaId)
   const messageText = templates.manga.view(mangaId, manga, queryUrl)
 

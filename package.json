@@ -9,7 +9,8 @@
     "dotenv": "^6.2.0",
     "form-data": "^2.3.3",
     "html-entities": "^1.2.1",
-    "mongoose": "^5.4.4",
+    "mangadex-api": "^1.0.1",
+    "mongoose": "^5.4.5",
     "sharp": "^0.21.1",
     "telegra.ph": "^0.2.0",
     "telegraf": "^3.26.0"

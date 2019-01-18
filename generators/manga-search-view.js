@@ -1,6 +1,4 @@
-const {
-  search
-} = require('../mangadex')
+const { search } = require('mangadex-api')
 
 const {
   buttons,

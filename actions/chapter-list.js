@@ -2,7 +2,7 @@ const Composer = require('telegraf/composer')
 const composer = new Composer()
 const {
   getManga
-} = require('../mangadex')
+} = require('mangadex-api')
 const { buttons, templates, getUrlInMessage } = require('../lib')
 
 composer.action(/chapterlist=(\S+):id=(\S+):offset=(\S+?):(\S+)/i, async ctx => {
