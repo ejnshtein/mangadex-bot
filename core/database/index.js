@@ -1,5 +1,7 @@
 const mongoose = require('mongoose')
-const { Schema } = mongoose
+const {
+  Schema
+} = mongoose
 
 const connection = mongoose.createConnection(process.env.DATABASE_URL, {
   useNewUrlParser: true
@@ -17,12 +19,37 @@ const collections = [
   {
     name: 'users',
     schema: new Schema({
-      id: { type: Number, unique: true },
-      username: { type: String, required: false },
-      first_name: { type: String, required: false },
-      last_name: { type: String, required: false },
-      last_update: { type: Date, default: () => Date.now() },
-      favorite_titles: { type: [Number], default: [], required: false }
+      id: {
+        type: Number,
+        unique: true
+      },
+      username: {
+        type: String,
+        required: false
+      },
+      first_name: {
+        type: String,
+        required: false
+      },
+      last_name: {
+        type: String,
+        required: false
+      },
+      last_update: {
+        type: Date,
+        default: () => Date.now()
+      },
+      favorite_titles: {
+        type: [
+          new Schema({
+            status: String,
+            chapter_id: Number,
+            manga_id: Number
+          })
+        ],
+        default: [],
+        required: false
+      }
     }, {
       timestamps: {
         updatedAt: 'updated_at',
@@ -41,8 +68,14 @@ const collections = [
         type: String,
         required: true
       },
-      manga_id: { type: Number, required: false },
-      manga_title: { type: String, required: false },
+      manga_id: {
+        type: Number,
+        required: false
+      },
+      manga_title: {
+        type: String,
+        required: false
+      },
       timestamp: Number
     }, {
       timestamps: {
