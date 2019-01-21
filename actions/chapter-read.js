@@ -13,7 +13,7 @@ composer.action(/chapterread=(\S+):id=(\S+):offset=(\S+):(\S+)/i, async ctx => {
 
   // console.log(lang, mangaId, offset)
 
-  const { chapter } = await getManga(mangaId)
+  const { chapter } = await getManga(mangaId, false)
 
   const chapters = Object.keys(chapter).map(id => ({ ...chapter[id], id })).filter(el => el.lang_code === lang)
   chapters.sort((a, b) => Number.parseFloat(a.chapter) - Number.parseFloat(b.chapter))

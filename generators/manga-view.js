@@ -2,7 +2,7 @@ const { getManga } = require('mangadex-api')
 const { templates, groupBy, loadLangCode, buttons } = require('../lib')
 
 module.exports = async (mangaId, queryUrl = 'https://mangadex.org/search?title=', history = 'p=1:o=0') => {
-  const { manga, chapter } = await getManga(mangaId)
+  const { manga, chapter } = await getManga(mangaId, false)
   const messageText = templates.manga.view(mangaId, manga, queryUrl)
 
   const chapters = groupBy(Object.keys(chapter).map(id => ({ ...chapter[id], id })), 'lang_code')
