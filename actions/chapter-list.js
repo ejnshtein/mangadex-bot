@@ -62,8 +62,14 @@ composer.action(/chapterlist=(\S+):id=(\S+):offset=(\S+?):(\S+)/i, async ctx => 
             callback_data: `manga=${mangaId}:${history}`
           }
         ],
+        manga.links['mal'] ? [
+          {
+            text: 'Track reading on MAL',
+            url: `https://myanimelist.com/anime/${manga.links['mal']}`
+          }
+        ] : [],
         navigation
-      ].concat(keyboard)
+      ].filter(el => el.length > 0).concat(keyboard)
     }
   })
 })
