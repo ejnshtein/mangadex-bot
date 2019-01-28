@@ -63,7 +63,7 @@ composer.action(/chapter=(\S+):prev=(\S+):next=(\S+):offset=(\S+?):(\S+)/i, asyn
     manga.manga.links['mal'] ? [
       {
         text: 'Track reading on MAL',
-        url: `https://myanimelist.net/anime/${manga.manga.links['mal']}`
+        url: `https://myanimelist.net/manga/${manga.manga.links['mal']}`
       }
     ] : []
   ].filter(el => el.length > 0)

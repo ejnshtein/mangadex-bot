@@ -18,6 +18,14 @@ module.exports = async (mangaId, queryUrl = 'https://mangadex.org/search?title='
       keyboard.push([obj])
     }
   }
+  if (manga.links['mal']) {
+    keyboard.unshift([
+      {
+        text: 'Track reading on MAL',
+        url: `https://myanimelist.net/manga/${manga.links['mal']}`
+      }]
+    )
+  }
   keyboard.unshift([
     {
       text: buttons.back,
