@@ -26,6 +26,10 @@ module.exports = async (mangaId, queryUrl = 'https://mangadex.org/search?title='
     {
       text: buttons.page.refresh(),
       callback_data: `manga=${mangaId}:${history}`
+    },
+    {
+      text: buttons.share,
+      switch_inline_query: `manga:${mangaId}`
     }
   ])
   return {

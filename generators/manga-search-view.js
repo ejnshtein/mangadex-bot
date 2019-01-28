@@ -67,6 +67,10 @@ module.exports = async (query = '', page = 1, offset = 0) => {
     )
   }
   keyboard.unshift(pageLine)
+  keyboard.unshift([{
+    text: 'Switch to inline',
+    switch_inline_query_current_chat: query
+  }])
   return {
     text: templates.searchText(`https://mangadex.org/search?title=${query}`, query, 1, 0),
     extra: {
