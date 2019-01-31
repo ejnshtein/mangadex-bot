@@ -8,7 +8,7 @@ composer.hears(/\/search ([\S\s]+)/i, onlyPrivate, async ctx => {
   const { text, extra } = await mangaSearchView(query)
   ctx.reply(text, extra)
 })
-composer.command(['search', 'index'], async ctx => {
+composer.command(['search', 'index'], onlyPrivate, async ctx => {
   const { text, extra } = await mangaSearchView('')
   ctx.reply(text, extra)
 })

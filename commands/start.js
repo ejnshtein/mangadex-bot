@@ -2,8 +2,9 @@ const Composer = require('telegraf/composer')
 const composer = new Composer()
 const { buffer } = require('../lib')
 const { mangaView, mangaSearchView, chapterView } = require('../generators')
+const { onlyPrivate } = require('../middlewares')
 
-composer.start(async ctx => {
+composer.start(onlyPrivate, async ctx => {
   if (ctx.startPayload) {
     const text = buffer.decode(ctx.startPayload)
     switch (true) {
