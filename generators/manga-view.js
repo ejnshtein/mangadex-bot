@@ -3,10 +3,23 @@ const { templates, groupBy, loadLangCode, buttons } = require('../lib')
 
 module.exports = async (mangaId, queryUrl = 'https://mangadex.org/search?title=', history = 'p=1:o=0') => {
   const { manga, chapter } = await getManga(mangaId, false)
-  const messageText = templates.manga.view(mangaId, manga, queryUrl)
+  const messageText = templates.manga.view(
+    mangaId,
+    manga,
+    queryUrl
+  )
 
-  const chapters = groupBy(Object.keys(chapter).map(id => ({ ...chapter[id], id })), 'lang_code')
-  const keyboard = [[]]
+  const chapters = groupBy(
+    Object.keys(chapter)
+      .map(id =>
+        ({ ...chapter[id], id })
+      ),
+    'lang_code'
+  )
+
+  const keyboard = [
+    []
+  ]
   for (const code of Object.keys(chapters)) {
     const obj = {
       text: loadLangCode(code),
@@ -19,27 +32,31 @@ module.exports = async (mangaId, queryUrl = 'https://mangadex.org/search?title='
     }
   }
   if (manga.links['mal']) {
-    keyboard.unshift([
-      {
-        text: 'Track reading on MAL',
-        url: `https://myanimelist.net/manga/${manga.links['mal']}`
-      }]
+    keyboard.unshift(
+      [
+        {
+          text: 'Track reading on MAL',
+          url: `https://myanimelist.net/manga/${manga.links['mal']}`
+        }
+      ]
     )
   }
-  keyboard.unshift([
-    {
-      text: buttons.back,
-      callback_data: `${history}`
-    },
-    {
-      text: buttons.page.refresh(),
-      callback_data: `manga=${mangaId}:${history}`
-    },
-    {
-      text: buttons.share,
-      switch_inline_query: `manga:${mangaId}`
-    }
-  ])
+  keyboard.unshift(
+    [
+      {
+        text: buttons.back,
+        callback_data: `${history}`
+      },
+      {
+        text: buttons.page.refresh(),
+        callback_data: `manga=${mangaId}:${history}`
+      },
+      {
+        text: buttons.share,
+        switch_inline_query: `manga:${mangaId}`
+      }
+    ]
+  )
   return {
     manga,
     chapter,

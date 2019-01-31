@@ -4,6 +4,7 @@ const { search, getManga } = require('mangadex-api')
 const { buffer, templates } = require('../lib')
 const { AllHtmlEntities } = require('html-entities')
 const { decode } = new AllHtmlEntities()
+const { chapterView } = require('../generators')
 
 composer.on('inline_query', async ctx => {
   const { query } = ctx.inlineQuery
@@ -17,7 +18,7 @@ composer.on('inline_query', async ctx => {
     })
   }
   offset = offset ? Number.parseInt(offset) : 1
-  console.log(offset)
+  // console.log(offset)
   // console.log(query, offset)
 
   let result
@@ -33,7 +34,7 @@ composer.on('inline_query', async ctx => {
         title: decode(manga.title),
         description: manga.description,
         input_message_content: {
-          message_text: templates.manga.inlineView(mangaId, manga),
+          message_text: templates.manga.inlineMangaView(mangaId, manga),
           disable_web_page_preview: false,
           parse_mode: 'HTML'
         },
@@ -46,6 +47,37 @@ composer.on('inline_query', async ctx => {
           ]
         },
         thumb_url: manga.cover_url
+      }]
+      offset = 0
+      break
+    case /^chapter:([0-9]+)$/i.test(query):
+      const chapterId = query.match(/^chapter:([0-9]+)$/i)[1]
+      const { chapter, manga: mangaChapter, text } = await chapterView(chapterId)
+      result = [{
+        type: 'article',
+        id: chapterId,
+        title: `${chapter.volume ? `Vol. ${chapter.volume} ` : ''}Ch. ${chapter.chapter} ${decode(mangaChapter.manga.title)}`,
+        description: mangaChapter.manga.description,
+        input_message_content: {
+          message_text: text,
+          disable_web_page_preview: false,
+          parse_mode: 'HTML'
+        },
+        reply_markup: {
+          inline_keyboard: [
+            [
+              {
+                text: 'Desktop Instant View',
+                url: chapter.telegraph
+              },
+              {
+                text: 'Read manga',
+                url: `https://t.me/${ctx.me}?start=${buffer.encode(`chapter:${chapterId}`)}`
+              }
+            ]
+          ]
+        },
+        thumb_url: chapter.page_array[0]
       }]
       offset = 0
       break
@@ -75,7 +107,7 @@ composer.on('inline_query', async ctx => {
       })
       break
   }
-  console.log(result)
+  // console.log(result)
   try {
     await ctx.answerInlineQuery(result, {
       cache_time: 5,
