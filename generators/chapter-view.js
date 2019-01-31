@@ -12,15 +12,17 @@ module.exports = async (chapterId, offset = 0, history = 'p=1:o=0') => {
       {
         text: 'Desktop Instant View',
         url: chapter.telegraph
+      },
+      {
+        text: 'Share chapter',
+        switch_inline_query: `chapter:${chapterId}`
       }
     ],
     [
       {
         text: 'Chapter list',
         callback_data: `chapterlist=${chapter.lang_code}:id=${chapter.manga_id}:offset=${offset}:${history}`
-      }
-    ],
-    [
+      },
       {
         text: 'Manga description',
         callback_data: `manga=${chapter.manga_id}:${history}`
