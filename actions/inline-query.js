@@ -1,6 +1,6 @@
 const Composer = require('telegraf/composer')
 const composer = new Composer()
-const { search, getManga } = require('mangadex-api')
+const { search, getManga } = require('mangadex-api').default
 const { buffer, templates } = require('../lib')
 const { AllHtmlEntities } = require('html-entities')
 const { decode } = new AllHtmlEntities()

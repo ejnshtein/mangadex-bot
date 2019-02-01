@@ -1,4 +1,4 @@
-const { search } = require('mangadex-api')
+const { search } = require('mangadex-api').default
 
 module.exports.inlineMode = (searchSegment, query, params = {}) => {
   params = {

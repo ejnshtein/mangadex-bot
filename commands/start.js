@@ -16,19 +16,19 @@ composer.start(onlyPrivate, async ctx => {
           return
         } catch (e) {}
         break
-      case /search:[\S\s]+/i.test(text):
-        const query = text.match(/search:([\S\s])+/i)[1]
-        const { text: searchText, extra: searchExtra } = await mangaSearchView(query)
-        try {
-          await ctx.reply(searchText, searchExtra)
-          return
-        } catch (e) {}
-        break
       case /chapter:([0-9]+)/i.test(text):
         const chapterId = text.match(/chapter:([0-9]+)/i)[1]
         const { text: chapterText, extra: chapterExtra } = await chapterView(chapterId)
         try {
           await ctx.reply(chapterText, chapterExtra)
+          return
+        } catch (e) {}
+        break
+      case /search:[\S\s]+/i.test(text):
+        const query = text.match(/search:([\S\s])+/i)[1]
+        const { text: searchText, extra: searchExtra } = await mangaSearchView(query)
+        try {
+          await ctx.reply(searchText, searchExtra)
           return
         } catch (e) {}
         break

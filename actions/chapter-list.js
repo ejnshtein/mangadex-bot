@@ -1,8 +1,6 @@
 const Composer = require('telegraf/composer')
 const composer = new Composer()
-const {
-  getManga
-} = require('mangadex-api')
+const { getManga } = require('mangadex-api').default
 const { buttons, templates, getUrlInMessage } = require('../lib')
 
 composer.action(/chapterlist=(\S+):id=(\S+):offset=(\S+?):(\S+)/i, async ctx => {
@@ -12,27 +10,30 @@ composer.action(/chapterlist=(\S+):id=(\S+):offset=(\S+?):(\S+)/i, async ctx => 
   const offset = Number.parseInt(ctx.match[3])
   const history = ctx.match[4]
 
-  // console.log(lang, mangaId, offset)
+  const { chapter, manga } = await getManga(mangaId)
 
-  const { chapter, manga } = await getManga(mangaId, false)
+  const chapters = chapter
+    .filter(el => el.lang_code === lang)
 
-  const chapters = Object.keys(chapter).map(id => ({ ...chapter[id], id })).filter(el => el.lang_code === lang)
-  chapters.sort((a, b) => Number.parseFloat(a.chapter) - Number.parseFloat(b.chapter))
   const slicedChapters = chapters.slice(offset, offset + 20)
-  const keyboard = [[]]
+  const cachedChapters = await ctx.db('chapters').find({ id: { $in: slicedChapters.map(el => el.id) } }, 'id').exec()
+  const keyboard = [
+    []
+  ]
+
   for (let chapterId = 0; chapterId < slicedChapters.length; chapterId++) {
     const chapter = slicedChapters[chapterId]
-    const obj = {
-      text: `${chapter.volume ? `Vol. ${chapter.volume} ` : ''}Ch. ${chapter.chapter}`,
-      callback_data: `chapter=${chapter.id}:prev=${slicedChapters[chapterId - 1] ? slicedChapters[chapterId].id : 'null'}:next=${slicedChapters[chapterId + 1] ? slicedChapters[chapterId].id : 'null'}:offset=${offset}:${history}`
+    const button = {
+      text: `${cachedChapters.some(el => el.id === chapter.id) ? '🗲  ' : ''}${chapter.volume ? `Vol. ${chapter.volume} ` : ''}Ch. ${chapter.chapter}`,
+      callback_data: `chapter=${chapter.id}:prev=${slicedChapters[chapterId - 1] ? slicedChapters[chapterId - 1].id : 'null'}:next=${slicedChapters[chapterId + 1] ? slicedChapters[chapterId + 1].id : 'null'}:offset=${offset}:${history}`
     }
     if (keyboard[keyboard.length - 1].length < 2) {
-      keyboard[keyboard.length - 1].push(obj)
+      keyboard[keyboard.length - 1].push(button)
     } else {
-      keyboard.push([obj])
+      keyboard.push([button])
     }
   }
-  // console.log(slicedChapters)
+
   const navigation = []
   if (slicedChapters.length === 20 && chapters.slice(offset + 20, offset + 40).length >= 1) {
     navigation.push(
@@ -67,9 +68,11 @@ composer.action(/chapterlist=(\S+):id=(\S+):offset=(\S+?):(\S+)/i, async ctx => 
             text: 'Track reading on MAL',
             url: `https://myanimelist.net/manga/${manga.links['mal']}`
           }
-        ] : [],
+        ] : undefined,
         navigation
-      ].filter(el => el.length > 0).concat(keyboard)
+      ]
+        .filter(Boolean)
+        .concat(keyboard)
     }
   })
 })

@@ -1,4 +1,4 @@
-const { search } = require('mangadex-api')
+const { search } = require('mangadex-api').default
 const { AllHtmlEntities } = require('html-entities')
 const { decode } = new AllHtmlEntities()
 module.exports = (params) => search(params)

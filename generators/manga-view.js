@@ -1,8 +1,8 @@
-const { getManga } = require('mangadex-api')
+const { getManga } = require('mangadex-api').default
 const { templates, groupBy, loadLangCode, buttons } = require('../lib')
 
 module.exports = async (mangaId, queryUrl = 'https://mangadex.org/search?title=', history = 'p=1:o=0') => {
-  const { manga, chapter } = await getManga(mangaId, false)
+  const { manga, chapter } = await getManga(mangaId)
   const messageText = templates.manga.view(
     mangaId,
     manga,
@@ -10,10 +10,7 @@ module.exports = async (mangaId, queryUrl = 'https://mangadex.org/search?title='
   )
 
   const chapters = groupBy(
-    Object.keys(chapter)
-      .map(id =>
-        ({ ...chapter[id], id })
-      ),
+    chapter,
     'lang_code'
   )
 
@@ -22,7 +19,7 @@ module.exports = async (mangaId, queryUrl = 'https://mangadex.org/search?title='
   ]
   for (const code of Object.keys(chapters)) {
     const obj = {
-      text: loadLangCode(code),
+      text: `Read in ${loadLangCode(code)}`,
       callback_data: `chapterlist=${code}:id=${mangaId}:offset=0:${history}`
     }
     if (keyboard[keyboard.length - 1].length < 2) {
