@@ -5,4 +5,5 @@ module.exports = app => {
   require('./chapter-page')(app)
   require('./chapter-list')(app)
   require('./delete')(app)
+  require('./mark-as-read')(app)
 }

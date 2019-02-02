@@ -49,6 +49,44 @@ const collections = [
         ],
         default: [],
         required: false
+      },
+      currently_reading: {
+        type: [
+          new Schema({
+            manga_id: {
+              type: Number,
+              unique: true,
+              required: true
+            },
+            chapter_id: {
+              type: Number,
+              required: true
+            }
+          }, {
+            timestamps: {
+              createdAt: 'created_at',
+              updatedAt: 'updated_at'
+            }
+          })
+        ],
+        required: true,
+        default: []
+      },
+      already_read: {
+        type: [
+          new Schema({
+            chapter_id: {
+              type: Number
+            }
+          }, {
+            timestamps: {
+              createdAt: 'created_at',
+              updatedAt: 'updated_at'
+            }
+          })
+        ],
+        required: true,
+        default: []
       }
     }, {
       timestamps: {
