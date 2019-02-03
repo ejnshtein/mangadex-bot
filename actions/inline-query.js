@@ -6,120 +6,175 @@ const { AllHtmlEntities } = require('html-entities')
 const { decode } = new AllHtmlEntities()
 const { chapterView } = require('../generators')
 
-composer.on('inline_query', async ctx => {
-  const { query } = ctx.inlineQuery
-  let { offset } = ctx.inlineQuery
-  if (offset && Number.parseInt(offset) === 1) {
-    return ctx.answerInlineQuery([], {
-      cache_time: 5,
-      switch_pm_text: 'Search manga',
-      switch_pm_parameter: `${buffer.encode(`search:${query.substr(0, 64)}`)}`,
-      next_offset: `${offset}`
-    })
+composer.inlineQuery(/^manga:([0-9]+)$/i, async ({ match, me, inlineQuery, answerInlineQuery }) => {
+  if (inlineQuery.offset && inlineQuery.offset === '1') { return answerInlineQuery([], queryOptions()) }
+  const mangaId = match[1]
+  try {
+    var { manga } = await getManga(mangaId)
+  } catch (e) {
+    return answerInlineQuery(sendError(e), queryOptions())
   }
-  offset = offset ? Number.parseInt(offset) : 1
-  // console.log(offset)
-  // console.log(query, offset)
-
-  let result
-  switch (true) {
-    case /^manga:([0-9]+)$/i.test(query):
-      const mangaId = query.match(/^manga:([0-9]+)$/i)[1]
-      const { manga } = await getManga(mangaId)
-      manga.description = manga.description.replace(/\[url=(\S+?)\](\S+?)\[\/url\]/ig, `<a href="$1">$2</a>`)
-      // console.log(manga, mangaId)
-      result = [{
-        type: 'article',
-        id: mangaId,
-        title: decode(manga.title),
-        description: manga.description,
-        input_message_content: {
-          message_text: templates.manga.inlineMangaView(mangaId, manga),
-          disable_web_page_preview: false,
-          parse_mode: 'HTML'
-        },
-        reply_markup: {
-          inline_keyboard: [
-            [{
-              text: 'Read manga',
-              url: `https://t.me/${ctx.me}?start=${buffer.encode(`manga:${mangaId}`)}`
-            }]
-          ]
-        },
-        thumb_url: manga.cover_url
-      }]
-      offset = 0
-      break
-    case /^chapter:([0-9]+)$/i.test(query):
-      const chapterId = query.match(/^chapter:([0-9]+)$/i)[1]
-      const { chapter, manga: mangaChapter, text } = await chapterView(chapterId)
-      result = [{
-        type: 'article',
-        id: chapterId,
-        title: `${chapter.volume ? `Vol. ${chapter.volume} ` : ''}Ch. ${chapter.chapter} ${decode(mangaChapter.manga.title)}`,
-        description: mangaChapter.manga.description,
-        input_message_content: {
-          message_text: text,
-          disable_web_page_preview: false,
-          parse_mode: 'HTML'
-        },
-        reply_markup: {
-          inline_keyboard: [
-            [
-              {
-                text: 'Desktop Instant View',
-                url: chapter.telegraph
-              },
-              {
-                text: 'Read manga',
-                url: `https://t.me/${ctx.me}?start=${buffer.encode(`chapter:${chapterId}`)}`
-              }
-            ]
-          ]
-        },
-        thumb_url: chapter.page_array[0]
-      }]
-      offset = 0
-      break
-    default:
-      const searchResult = await search(query, 'title', { p: offset })
-      result = searchResult.titles.map(title => {
-        return {
+  manga.description = manga.description.replace(/\[url=(\S+?)\](\S+?)\[\/url\]/ig, `<a href="$1">$2</a>`)
+  // console.log(manga, mangaId)
+  try {
+    await answerInlineQuery(
+      [
+        {
           type: 'article',
-          id: title.id.toString(),
-          title: decode(title.title),
-          description: title.description,
+          id: mangaId,
+          title: decode(manga.title),
+          description: manga.description,
           input_message_content: {
-            message_text: templates.manga.inlineQuery(title),
+            message_text: templates.manga.inlineMangaView(mangaId, manga),
             disable_web_page_preview: false,
             parse_mode: 'HTML'
           },
           reply_markup: {
             inline_keyboard: [
-              [{
-                text: 'Read manga',
-                url: `https://t.me/${ctx.me}?start=${buffer.encode(`manga:${title.id}`)}`
-              }]
+              [
+                {
+                  text: 'Read manga',
+                  url: `https://t.me/${me}?start=${buffer.encode(`manga:${mangaId}`)}`
+                }
+              ]
             ]
           },
-          thumb_url: title.image_url
+          thumb_url: manga.cover_url
         }
-      })
-      break
-  }
-  // console.log(result)
-  try {
-    await ctx.answerInlineQuery(result, {
-      cache_time: 5,
-      switch_pm_text: 'Search manga',
-      switch_pm_parameter: `${buffer.encode(`search:${query.substr(0, 64)}`)}`,
-      next_offset: `${result.length === 50 ? offset + 1 : 1}`
-    })
+      ],
+      queryOptions(`Read ${decode(manga.title)}`, match[0])
+    )
   } catch (e) {
-    console.log(e)
+    return answerInlineQuery(sendError(e), queryOptions())
+  }
+})
+
+composer.inlineQuery(/^chapter:([0-9]+)$/i, async ({ match, me, inlineQuery, answerInlineQuery }) => {
+  if (inlineQuery.offset && inlineQuery.offset === '1') { return answerInlineQuery([], queryOptions()) }
+  const chapterId = match[1]
+  try {
+    var {
+      chapter,
+      manga: {
+        manga
+      },
+      text
+    } = await chapterView(chapterId)
+  } catch (e) {
+    return answerInlineQuery(sendError(e), queryOptions())
+  }
+  try {
+    await answerInlineQuery(
+      [
+        {
+          type: 'article',
+          id: chapterId,
+          title: `${chapter.volume ? `Vol. ${chapter.volume} ` : ''}Ch. ${chapter.chapter} ${decode(manga.title)}`,
+          description: manga.description,
+          input_message_content: {
+            message_text: text,
+            disable_web_page_preview: false,
+            parse_mode: 'HTML'
+          },
+          reply_markup: {
+            inline_keyboard: [
+              [
+                {
+                  text: 'Desktop Instant View',
+                  url: chapter.telegraph
+                },
+                {
+                  text: 'Read manga',
+                  url: `https://t.me/${me}?start=${buffer.encode(`chapter:${chapterId}`)}`
+                }
+              ]
+            ]
+          },
+          thumb_url: chapter.page_array[0]
+        }
+      ],
+      queryOptions(`Read ${decode(manga.title)}`, match[0])
+    )
+  } catch (e) {
+    return answerInlineQuery(sendError(e), queryOptions())
+  }
+})
+
+composer.on('inline_query', async ctx => {
+  const { query } = ctx.inlineQuery
+  let { offset } = ctx.inlineQuery
+  if (offset && offset === '1') {
+    return ctx.answerInlineQuery([], queryOptions(undefined, query))
+  }
+  offset = offset ? Number.parseInt(offset) : 1
+  // console.log(offset)
+  // console.log(query, offset)
+  try {
+    var searchResult = await search(query, 'title', { p: offset })
+  } catch (e) {
+    return ctx.answerInlineQuery(sendError(e), queryOptions())
+  }
+  const result = searchResult.titles.map(title =>
+    ({
+      type: 'article',
+      id: title.id.toString(),
+      title: decode(title.title),
+      description: title.description,
+      input_message_content: {
+        message_text: templates.manga.inlineQuery(title),
+        disable_web_page_preview: false,
+        parse_mode: 'HTML'
+      },
+      reply_markup: {
+        inline_keyboard: [
+          [{
+            text: 'Read manga',
+            url: `https://t.me/${ctx.me}?start=${buffer.encode(`manga:${title.id}`)}`
+          }]
+        ]
+      },
+      thumb_url: title.image_url
+    })
+  )
+  try {
+    await ctx.answerInlineQuery(result, queryOptions(undefined, query, `${result.length === 50 ? offset + 1 : 1}`))
+  } catch (e) {
+    return ctx.answerInlineQuery(sendError(e), queryOptions(undefined, query))
   }
 })
 
 module.exports = app => {
   app.use(composer.middleware())
+}
+
+function sendError (error) {
+  console.log(error)
+  return [
+    {
+      type: 'article',
+      id: '1',
+      title: 'Error!',
+      description: 'Something went wrong. Try again later, or change request query.',
+      input_message_content: {
+        message_text: `Error!\n\nSomething went wrong. Try again later, or change request query.`
+      }
+    }
+  ]
+}
+
+function queryOptions (switchPmText = 'Search manga', query = '', offset = '1', cacheTime = 5, isPersonal = false) {
+  return Object.assign({},
+    switchPmText ? {
+      switch_pm_text: switchPmText,
+      switch_pm_parameter: `${buffer.encode(`search:${query.substr(0, 64)}`)}`
+    } : {},
+    offset ? {
+      next_offset: offset
+    } : {},
+    cacheTime ? {
+      cache_time: cacheTime
+    } : {},
+    isPersonal ? {
+      is_personal: isPersonal
+    } : {})
 }

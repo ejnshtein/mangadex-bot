@@ -6,7 +6,7 @@ module.exports = async (chapterId, offset = 0, history = 'p=1:o=0') => {
   let chapter = await getChapter(chapterId)
   const manga = await getManga(chapter.manga_id, false)
   chapter.id = chapterId
-  chapter = await getFiles(chapter)
+  chapter = await getFiles(chapter, manga)
   const keyboard = [
     [
       {

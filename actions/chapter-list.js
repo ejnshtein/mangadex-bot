@@ -1,7 +1,7 @@
 const Composer = require('telegraf/composer')
 const composer = new Composer()
 const { getManga } = require('mangadex-api').default
-const { buttons, templates, getUrlInMessage } = require('../lib')
+const { buttons, templates, getUrlInMessage, getGroupName } = require('../lib')
 
 composer.action(/chapterlist=(\S+):id=(\S+):offset=(\S+?):(\S+)/i, async ctx => {
   ctx.answerCbQuery('')
@@ -83,20 +83,4 @@ composer.action(/chapterlist=(\S+):id=(\S+):offset=(\S+?):(\S+)/i, async ctx => 
 
 module.exports = app => {
   app.use(composer.middleware())
-}
-
-function getGroupName (chapter) {
-  return ` by ${chapter.group_name
-    ? chapter.group_name
-    : chapter.group_name_2
-      ? chapter.group_name_2
-      : chapter.group_name_3
-        ? chapter.group_name_3
-        : chapter.group_id
-          ? chapter.group_id
-          : chapter.group_id_2
-            ? chapter.group_id_2
-            : chapter.group_id_3
-              ? chapter.group_id_3
-              : chapter.id}`
 }
