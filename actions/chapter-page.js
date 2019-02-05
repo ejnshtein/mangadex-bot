@@ -5,11 +5,15 @@ const { templates, setCurrentlyReading } = require('../lib')
 const getFiles = require('../lib/get-files')
 
 composer.action([
-  /chapter=(\S+):prev=(\S+):next=(\S+):offset=(\S+?):(\S+)/i,
-  /chapter=(\S+):read=(\S+):next=(\S+):offset=(\S+?):(\S+)/i
+  /^chapter=(\S+):prev=(\S+):next=(\S+):offset=(\S+?):(\S+)$/i,
+  /^chapter=(\S+):read=(\S+):next=(\S+):offset=(\S+?):(\S+)$/i,
+  /^chapter=(\S+):read=(\S+):copy=(\S+):offset=(\S+?):(\S+)$/i
 ], async ctx => {
+  ctx.answerCbQuery('')
+  // console.log(ctx.match)
   const chapterId = ctx.match[1]
   const markedRead = ctx.match[2] === 'true'
+  const copy = ctx.match[3] === 'true'
   const offset = ctx.match[4]
   const history = ctx.match[5]
   let chapter = await getChapter(chapterId)
@@ -39,6 +43,10 @@ composer.action([
       {
         text: 'Manga description',
         callback_data: `manga=${chapter.manga_id}:${history}`
+      },
+      {
+        text: 'Send copy',
+        callback_data: `chapter=${chapterId}:read=${ctx.match[2]}:copy=true:offset=${offset}:${history}`
       }
     ],
     manga.manga.links['mal'] ? [
@@ -48,13 +56,22 @@ composer.action([
       }
     ] : undefined
   ].filter(Boolean)
-  const messageText = templates.manga.chapter(chapter, ctx.callbackQuery.message)
-  ctx.editMessageText(messageText, {
-    parse_mode: 'HTML',
-    reply_markup: {
-      inline_keyboard: keyboard
-    }
-  })
+  const messageText = templates.manga.chapter(chapter, manga, ctx.callbackQuery.message)
+  if (copy) {
+    ctx.reply(messageText, {
+      parse_mode: 'HTML',
+      reply_markup: {
+        inline_keyboard: keyboard
+      }
+    })
+  } else {
+    ctx.editMessageText(messageText, {
+      parse_mode: 'HTML',
+      reply_markup: {
+        inline_keyboard: keyboard
+      }
+    })
+  }
   setCurrentlyReading(chapter.manga_id, chapterId, ctx.state.user)
 })
 

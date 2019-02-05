@@ -29,7 +29,7 @@ composer.action(/chapterlist=(\S+):id=(\S+):offset=(\S+?):(\S+)/i, async ctx => 
     const chapter = slicedChapters[chapterId]
     const button = {
       text: `${alreadyRead ? alreadyRead.includes(chapter.id) ? '👁 ' : '' : ''}${cachedChapters.some(el => el.id === chapter.id) ? '🗲  ' : ''}${chapter.chapter ? `${chapter.volume ? `Vol. ${chapter.volume} ` : ''}Ch. ${chapter.chapter}` : chapter.title}${chapters.some(el => el.chapter === chapter.chapter && el.id !== chapter.id) ? getGroupName(chapter) : ''}`,
-      callback_data: `chapter=${chapter.id}:read=${alreadyRead ? alreadyRead.includes(chapter.id) ? 'true' : 'false' : 'false'}:next=${slicedChapters[chapterId + 1] ? slicedChapters[chapterId + 1].id : 'null'}:offset=${offset}:${history}`
+      callback_data: `chapter=${chapter.id}:read=${alreadyRead ? alreadyRead.includes(chapter.id) ? 'true' : 'false' : 'false'}:copy=false:offset=${offset}:${history}`
     }
     if (keyboard[keyboard.length - 1].length < 2) {
       keyboard[keyboard.length - 1].push(button)

@@ -2,6 +2,7 @@ const Composer = require('telegraf/composer')
 const composer = new Composer()
 
 composer.action(/^delete$/i, async ctx => {
+  ctx.answerCbQuery('')
   try {
     await ctx.deleteMessage()
   } catch (e) {

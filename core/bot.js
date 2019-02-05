@@ -15,7 +15,7 @@ bot.context.db = collection
 bot.use(rateLimit({
   window: 2000,
   limit: 3,
-  onLimitExceeded: (ctx) => ctx.reply('Wow, too fast, cowboy. Slow down.')
+  onLimitExceeded: (ctx) => !ctx.inlineQuery ? ctx.reply('Wow, too fast, cowboy. Slow down.') : undefined
 }))
 
 bot.use(logger())
