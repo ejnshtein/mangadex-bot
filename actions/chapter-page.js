@@ -9,7 +9,6 @@ composer.action([
   /^chapter=(\S+):read=(\S+):next=(\S+):offset=(\S+?):(\S+)$/i,
   /^chapter=(\S+):read=(\S+):copy=(\S+):offset=(\S+?):(\S+)$/i
 ], async ctx => {
-  ctx.answerCbQuery('')
   // console.log(ctx.match)
   const chapterId = ctx.match[1]
   const markedRead = ctx.match[2] === 'true'
@@ -18,8 +17,8 @@ composer.action([
   const history = ctx.match[5]
   let chapter = await getChapter(chapterId)
   const manga = await getManga(chapter.manga_id, false)
-  chapter = await getFiles(chapter, manga, ctx)
-  if (!chapter) { return }
+  chapter = await getFiles(chapter, manga, ctx, offset, history)
+  if (!chapter) { return ctx.answerCbQuery('') }
   const keyboard = [
     [
       {
