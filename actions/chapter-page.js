@@ -15,10 +15,19 @@ composer.action([
   const copy = ctx.match[3] === 'true'
   const offset = ctx.match[4]
   const history = ctx.match[5]
+  if (getFiles.getCacheBlockingValue()) {
+    return ctx.answerCbQuery(
+      `Sorry, caching isn't available right now.\nThis can be because of bot update or malfunction.`,
+      true,
+      { cache_time: 10 }
+    )
+  }
   let chapter = await getChapter(chapterId)
   const manga = await getManga(chapter.manga_id, false)
   chapter = await getFiles(chapter, manga, ctx, offset, history)
-  if (!chapter) { return ctx.answerCbQuery('') }
+  if (!chapter) {
+    return ctx.answerCbQuery('')
+  }
   const keyboard = [
     [
       {

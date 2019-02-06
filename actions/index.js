@@ -6,4 +6,5 @@ module.exports = app => {
   require('./chapter-list')(app)
   require('./delete')(app)
   require('./mark-as-read')(app)
+  require('./choosen-inline-query')(app)
 }

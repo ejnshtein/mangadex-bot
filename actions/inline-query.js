@@ -127,10 +127,18 @@ composer.on('inline_query', async ctx => {
       },
       reply_markup: {
         inline_keyboard: [
-          [{
-            text: 'Read manga',
-            url: `https://t.me/${ctx.me}?start=${buffer.encode(`manga:${title.id}`)}`
-          }]
+          [
+            {
+              text: 'Read manga',
+              url: `https://t.me/${ctx.me}?start=${buffer.encode(`manga:${title.id}`)}`
+            }
+          ]
+          // ,[
+          //   {
+          //     text: 'Want to read',
+          //     callback_data: `test:1`
+          //   }
+          // ]
         ]
       },
       thumb_url: title.image_url
@@ -142,6 +150,11 @@ composer.on('inline_query', async ctx => {
     return ctx.answerInlineQuery(sendError(e), queryOptions(undefined, query))
   }
 })
+
+// composer.action(/test:(\S+)/i, async ctx => {
+//   console.log(ctx.update)
+//   ctx.answerCbQuery('Hello there!')
+// })
 
 module.exports = app => {
   app.use(composer.middleware())
