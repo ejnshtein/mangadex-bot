@@ -6,7 +6,8 @@ module.exports = async (mangaId, queryUrl = 'https://mangadex.org/search?title='
   const messageText = templates.manga.view(
     mangaId,
     manga,
-    queryUrl
+    queryUrl,
+    Boolean(chapter)
   )
   const withChapters = Boolean(chapter)
 
