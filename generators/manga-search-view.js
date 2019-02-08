@@ -4,19 +4,25 @@ const { AllHtmlEntities } = require('html-entities')
 const { decode } = new AllHtmlEntities()
 
 module.exports = async (query = '', page = 1, offset = 0) => {
-  const searchResult = await search(query)
+  const searchResult = await search(query, 'title', {
+    params: {
+      p: page
+    }
+  })
   // console.log(query, page, offset)
   const keyboard = searchResult.titles
     .slice(offset, offset + 10)
     .map(manga => (
-      [{
-        text: decode(manga.title),
-        callback_data: `manga=${manga.id}:p=${page}:o=${offset}`
-      }]
+      [
+        {
+          text: decode(manga.title),
+          callback_data: `manga=${manga.id}:p=${page}:o=${offset}`
+        }
+      ]
     ))
 
   if (offset >= 10) {
-    if (offset < 50) {
+    if (offset < 30) {
       keyboard.unshift([{
         text: buttons.offset.minus(10),
         callback_data: `p=${page}:o=${offset - 10}`
@@ -58,13 +64,31 @@ module.exports = async (query = '', page = 1, offset = 0) => {
       }
     )
   }
+  if (searchResult.last_page) {
+    if (searchResult.last_page - 1 >= page) {
+      pageLine.push(
+        {
+          text: buttons.page.next(page + 1),
+          callback_data: `p=${page + 1}:o=0`
+        }
+      )
+    }
+    if (searchResult.last_page - 2 >= page) {
+      pageLine.push(
+        {
+          text: buttons.page.nextDub(page + 2),
+          callback_data: `p=${page + 2}:o=0`
+        }
+      )
+    }
+  }
   keyboard.unshift(pageLine)
   keyboard.unshift([{
     text: 'Switch to inline',
     switch_inline_query_current_chat: query
   }])
   return {
-    text: templates.searchText(`https://mangadex.org/search?title=${query}`, query, 1, 0),
+    text: templates.searchText(`https://mangadex.org/search?title=${query}`, query, page, offset),
     extra: {
       reply_markup: {
         inline_keyboard: keyboard

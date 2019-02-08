@@ -8,35 +8,37 @@ module.exports = async (mangaId, queryUrl = 'https://mangadex.org/search?title='
     manga,
     queryUrl
   )
-
-  const chapters = groupBy(
-    chapter,
-    'lang_code'
-  )
+  const withChapters = Boolean(chapter)
 
   const keyboard = [
     []
   ]
-  for (const code of Object.keys(chapters)) {
-    const obj = {
-      text: `Read in ${loadLangCode(code)}`,
-      callback_data: `chapterlist=${code}:id=${mangaId}:offset=0:${history}`
-    }
-    if (keyboard[keyboard.length - 1].length < 2) {
-      keyboard[keyboard.length - 1].push(obj)
-    } else {
-      keyboard.push([obj])
-    }
-  }
-  if (manga.links['mal']) {
-    keyboard.unshift(
-      [
-        {
-          text: 'Track reading on MAL',
-          url: `https://myanimelist.net/manga/${manga.links['mal']}`
-        }
-      ]
+  if (withChapters) {
+    const chapters = groupBy(
+      chapter,
+      'lang_code'
     )
+    for (const code of Object.keys(chapters)) {
+      const obj = {
+        text: `Read in ${loadLangCode(code)}`,
+        callback_data: `chapterlist=${code}:id=${mangaId}:offset=0:${history}`
+      }
+      if (keyboard[keyboard.length - 1].length < 2) {
+        keyboard[keyboard.length - 1].push(obj)
+      } else {
+        keyboard.push([obj])
+      }
+    }
+    if (manga.links['mal']) {
+      keyboard.unshift(
+        [
+          {
+            text: 'Track reading on MAL',
+            url: `https://myanimelist.net/manga/${manga.links['mal']}`
+          }
+        ]
+      )
+    }
   }
   keyboard.unshift(
     [

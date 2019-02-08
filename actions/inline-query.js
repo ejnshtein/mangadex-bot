@@ -110,10 +110,11 @@ composer.on('inline_query', async ctx => {
   // console.log(offset)
   // console.log(query, offset)
   try {
-    var searchResult = await search(query, 'title', { p: offset })
+    var searchResult = await search(query, 'title', { params: { p: offset } })
   } catch (e) {
     return ctx.answerInlineQuery(sendError(e), queryOptions())
   }
+  // console.log(searchResult.titles.length)
   const result = searchResult.titles.map(title =>
     ({
       type: 'article',
@@ -145,7 +146,7 @@ composer.on('inline_query', async ctx => {
     })
   )
   try {
-    await ctx.answerInlineQuery(result, queryOptions(undefined, query, `${result.length === 50 ? offset + 1 : 1}`))
+    await ctx.answerInlineQuery(result, queryOptions(undefined, query, `${result.length >= 40 ? offset + 1 : 1}`))
   } catch (e) {
     return ctx.answerInlineQuery(sendError(e), queryOptions(undefined, query))
   }

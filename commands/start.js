@@ -16,7 +16,7 @@ composer.start(onlyPrivate, async ctx => {
           return
         } catch (e) {}
         break
-      case /chapter:([0-9]+)/i.test(text):
+      case /chapter:[0-9]+/i.test(text):
         const chapterId = text.match(/chapter:([0-9]+)/i)[1]
         const { text: chapterText, extra: chapterExtra } = await chapterView(chapterId)
         try {

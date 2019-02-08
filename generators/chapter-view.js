@@ -35,7 +35,7 @@ module.exports = async (chapterId, offset = 0, history = 'p=1:o=0') => {
       }
     ] : undefined
   ].filter(Boolean)
-  const messageText = templates.manga.chapter(chapter)
+  const messageText = templates.manga.chapter(chapter, manga)
   return {
     chapter,
     manga,

@@ -1,6 +1,6 @@
 {
   "name": "mangadex_bot",
-  "version": "2.0.9",
+  "version": "2.0.10",
   "description": "telegram-bot for reading manga on mangadex right in telegram",
   "main": "app.js",
   "dependencies": {
@@ -9,7 +9,7 @@
     "dotenv": "^6.2.0",
     "form-data": "^2.3.3",
     "html-entities": "^1.2.1",
-    "mangadex-api": "^1.0.1",
+    "mangadex-api": "^1.0.3-b",
     "mongoose": "^5.4.7",
     "sharp": "^0.21.1",
     "telegra.ph": "^1.0.0",
