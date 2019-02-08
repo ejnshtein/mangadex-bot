@@ -65,7 +65,8 @@ module.exports = async (mangaId, queryUrl = 'https://mangadex.org/search?title='
       reply_markup: {
         inline_keyboard: keyboard
       },
-      parse_mode: 'HTML'
+      parse_mode: 'HTML',
+      disable_web_page_preview: false
     }
   }
 }
