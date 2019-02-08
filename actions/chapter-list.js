@@ -47,6 +47,13 @@ composer.action(/chapterlist=(\S+):id=(\S+):offset=(\S+?):(\S+)/i, async ctx => 
       }
     )
   }
+  navigation.unshift(
+    {
+      text: buttons.page.refresh(),
+      callback_data: ctx.match[0]
+    }
+  )
+
   if (offset - 20 === 0 || offset - 20 > 0) {
     navigation.unshift(
       {
