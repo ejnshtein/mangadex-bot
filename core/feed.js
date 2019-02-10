@@ -59,7 +59,7 @@ module.exports = bot => {
     const hashtags = getHashtags(post.content)
     const title = parseTitle(post.title)
     let messageText = `<a href="${post.link}">&#8203;</a><b>${title.title}</b>\n`
-    messageText += `<b>${title.volume ? `Volume ${title.volume}, ` : ''}Chapter ${title.chapter}</b> in ${hashtags.lang}\n`
+    messageText += `<b>${title.volume ? `Volume ${title.volume}, ` : ''}${title.chapter ? `Chapter ${title.chapter}` : ''}</b> in ${hashtags.lang}\n`
     messageText += `<a href="${post.guid}">View</a>\n`
     await telegram.sendMessage(process.env.CHANNEL_ID, messageText, {
       parse_mode: 'HTML',
@@ -91,10 +91,12 @@ function getHashtags (content) {
 }
 
 function parseTitle (title) {
-  let volumeMatch = title.match(/Volume (\S+)/i)
+  const volumeMatch = title.match(/Volume (\S+)/i)
+  const titleMatch = title.match(/(.+?) - /i)
+  const chapterMatch = title.match(/Chapter (\S+)/i)
   return {
-    title: title.match(/(.+?) - /i)[1],
+    title: titleMatch ? titleMatch[1] : title,
     volume: volumeMatch ? volumeMatch[1] : undefined,
-    chapter: title.match(/Chapter (\S+)/i)
+    chapter: chapterMatch ? chapterMatch[1] : undefined
   }
 }
