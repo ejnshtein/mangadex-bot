@@ -34,19 +34,24 @@ composer.start(onlyPrivate, async ctx => {
         break
     }
   }
-  ctx.reply(`Hello!\nI'm <a href="https://mangadex.org">Mangadex</a> bot.\nI can send to you chapters from your favorite manga right here, in Telegram*!\n\n*Telegra.ph + Instant view on mobile, and just telegra.ph links for desktop version.`, {
-    parse_mode: 'HTML',
-    reply_markup: {
-      inline_keyboard: [
-        [
-          {
-            text: `Let's find some manga!`,
-            switch_inline_query_current_chat: ''
-          }
+  ctx.reply(
+    `Hello!\nI'm <a href="https://mangadex.org">Mangadex</a> bot.
+I can send to you chapters from your favorite manga right here, in Telegram*!
+Here's basic commands: /search, /index, /notes .
+
+*Telegra.ph + Instant View`, {
+      parse_mode: 'HTML',
+      reply_markup: {
+        inline_keyboard: [
+          [
+            {
+              text: `Let's find some manga!`,
+              switch_inline_query_current_chat: ''
+            }
+          ]
         ]
-      ]
-    }
-  })
+      }
+    })
 })
 
 module.exports = app => {
