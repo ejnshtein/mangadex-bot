@@ -47,6 +47,14 @@ composer.action(/chapterlist=(\S+):id=(\S+):offset=(\S+?):(\S+)/i, async ctx => 
       }
     )
   }
+  if (slicedChapters.length === 20 && chapters.slice(offset + 40, offset + 60).length >= 1) {
+    navigation.push(
+      {
+        text: buttons.page.nextDub('End'),
+        callback_data: `chapterlist=${lang}:id=${mangaId}:offset=${Math.floor(chapters.length / 20) * 20}:${history}`
+      }
+    )
+  }
   navigation.unshift(
     {
       text: buttons.page.refresh(),
@@ -59,6 +67,14 @@ composer.action(/chapterlist=(\S+):id=(\S+):offset=(\S+?):(\S+)/i, async ctx => 
       {
         text: buttons.back,
         callback_data: `chapterlist=${lang}:id=${mangaId}:offset=${offset - 20}:${history}`
+      }
+    )
+  }
+  if (offset - 40 === 0 || offset - 40 > 0) {
+    navigation.unshift(
+      {
+        text: buttons.page.prevDub('First'),
+        callback_data: `chapterlist=${lang}:id=${mangaId}:offset=0:${history}`
       }
     )
   }
