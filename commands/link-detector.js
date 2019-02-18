@@ -1,7 +1,7 @@
 const Composer = require('telegraf/composer')
 const composer = new Composer()
 const { onlyPrivate } = require('../middlewares')
-const { mangaView, chapterView } = require('../generators')
+const { mangaView } = require('../generators')
 const { getManga } = require('mangadex-api').default
 const { templates, buffer } = require('../lib')
 

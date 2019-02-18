@@ -20,7 +20,7 @@ composer.action(/^chapterlist=(\S+):id=(\S+):offset=(\S+?):(\S+)$/i, async ctx =
     .filter(el => el.lang_code === lang)
 
   const slicedChapters = chapters.slice(offset, offset + 20)
-  const cachedChapters = await ctx.db('chapters').find({ id: { $in: slicedChapters.map(el => el.id) } }, 'id').exec()
+  const cachedChapters = await ctx.db('chapters').find({ id: { $in: chapters.map(el => el.id) } }, 'id').exec()
   const keyboard = [
     []
   ]
@@ -89,7 +89,7 @@ composer.action(/^chapterlist=(\S+):id=(\S+):offset=(\S+?):(\S+)$/i, async ctx =
             text: 'Manga description',
             callback_data: `manga=${mangaId}:${history}`
           },
-          ctx.from.id === Number.parseInt(process.env.ADMIN_ID) ? {
+          cachedChapters.length && ctx.from.id === Number.parseInt(process.env.ADMIN_ID) ? {
             text: 'Cache full manga',
             callback_data: `cachemanga=${mangaId}:lang=${lang}`
           } : undefined

@@ -69,44 +69,6 @@ composer.action(/^cachemangafull=(\S+):lang=(\S+)$/i, async ctx => {
 
   const uncachedChapters = chapterstemp.filter(el => !cachedChapters.some(chap => chap.toObject().id === el.id)).map(el => el.id)
   await uploadChapter(mangaId, lang, manga, uncachedChapters, 0, ctx)
-  // for (const chapterId of uncachedChapters) {
-  //   if (typeof cachePool[mangaId] === 'boolean' && !cachePool[mangaId]) {
-  //     delete cachePool[mangaId]
-  //     return
-  //   }
-  //   const chapter = await getChapter(chapterId)
-  //   const cacheResult = await cacheChapter(chapter, manga, ctx, undefined, undefined, undefined, true)
-  //   if (!cacheResult.ok) {
-  //     ctx.reply(`Chapter ${chapter.chapter} caching error: ${cacheResult.message}`)
-  //     continue
-  //   }
-  //   if (typeof cachePool[mangaId] === 'boolean' && !cachePool[mangaId]) {
-  //     delete cachePool[mangaId]
-  //     return
-  //   }
-  //   cachePool[mangaId] = cachePool[mangaId] + 1
-  //   // console.log(cachePool[mangaId], ctx.callbackQuery.message)
-  //   try {
-  //     await ctx.telegram.editMessageText(
-  //       ctx.callbackQuery.message.chat.id,
-  //       ctx.callbackQuery.message.message_id,
-  //       undefined,
-  //       `Chapter ${chapter.chapter} cached.\nTotal: ${cachePool[mangaId]}/${uncachedChapters.length}`, {
-  //         reply_markup: {
-  //           inline_keyboard: [
-  //             [
-  //               {
-  //                 text: 'Cancel caching',
-  //                 callback_data: `endcaching=${ctx.match[1]}:lang=${ctx.match[2]}`
-  //               }
-  //             ]
-  //           ]
-  //         }
-  //       })
-  //   } catch (e) {
-  //     console.log(e)
-  //   }
-  // }
 })
 
 composer.action(/^endcaching=(\S+):lang=(\S+)$/i, async ctx => {
@@ -137,7 +99,13 @@ async function uploadChapter (mangaId, lang, manga, chapters, id, ctx) {
     delete cachePool[mangaId]
     return
   }
-  if (!chapters[id]) return 'done'
+  if (!chapters[id]) {
+    return ctx.telegram.editMessageText(
+      ctx.callbackQuery.message.chat.id,
+      ctx.callbackQuery.message.message_id,
+      undefined,
+      `Chapters from ${manga.title} has been fully cached.`)
+  }
   const chapter = await getChapter(chapters[id])
   const cacheResult = await cacheChapter(chapter, manga, ctx, undefined, undefined, undefined, true)
   if (!cacheResult.ok) {
