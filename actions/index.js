@@ -1,5 +1,6 @@
 module.exports = app => {
   require('./manga')(app)
+  require('./cachemanga')(app)
   require('./search')(app)
   require('./inline-query')(app)
   require('./chapter-page')(app)

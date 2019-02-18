@@ -3,7 +3,7 @@ const composer = new Composer()
 const { getManga } = require('mangadex-api').default
 const { buttons, templates, getUrlInMessage, getGroupName } = require('../lib')
 
-composer.action(/chapterlist=(\S+):id=(\S+):offset=(\S+?):(\S+)/i, async ctx => {
+composer.action(/^chapterlist=(\S+):id=(\S+):offset=(\S+?):(\S+)$/i, async ctx => {
   ctx.answerCbQuery('')
   const lang = ctx.match[1]
   const mangaId = ctx.match[2]
@@ -79,7 +79,7 @@ composer.action(/chapterlist=(\S+):id=(\S+):offset=(\S+?):(\S+)/i, async ctx => 
     )
   }
 
-  // console.log(keyboard)
+  // console.log(ctx.from.id === Number.parseInt(process.env.ADMIN_ID), `cachemanga=${mangaId}:lang=${lang}`)
   ctx.editMessageText(templates.manga.view(mangaId, manga, getUrlInMessage(ctx.callbackQuery.message), Boolean(chapter)), {
     parse_mode: 'HTML',
     reply_markup: {
@@ -88,8 +88,12 @@ composer.action(/chapterlist=(\S+):id=(\S+):offset=(\S+?):(\S+)/i, async ctx => 
           {
             text: 'Manga description',
             callback_data: `manga=${mangaId}:${history}`
-          }
-        ],
+          },
+          ctx.from.id === Number.parseInt(process.env.ADMIN_ID) ? {
+            text: 'Cache full manga',
+            callback_data: `cachemanga=${mangaId}:lang=${lang}`
+          } : undefined
+        ].filter(Boolean),
         manga.links['mal'] ? [
           {
             text: 'Track reading on MAL',

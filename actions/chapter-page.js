@@ -2,7 +2,7 @@ const Composer = require('telegraf/composer')
 const composer = new Composer()
 const { getChapter, getManga } = require('mangadex-api').default
 const { templates, setCurrentlyReading } = require('../lib')
-const getFiles = require('../lib/get-files')
+const cacheChapter = require('../lib/cache-chapter')
 
 composer.action([
   /^chapter=(\S+):prev=(\S+):next=(\S+):offset=(\S+?):(\S+)$/i,
@@ -15,7 +15,7 @@ composer.action([
   const copy = ctx.match[3] === 'true'
   const offset = ctx.match[4]
   const history = ctx.match[5]
-  if (getFiles.getCacheBlockingValue()) {
+  if (cacheChapter.getCacheBlockingValue()) {
     return ctx.answerCbQuery(
       `Sorry, caching isn't available right now.\nThis can be because of bot update or malfunction.`,
       true,
@@ -23,11 +23,12 @@ composer.action([
     )
   }
   let chapter = await getChapter(chapterId)
-  const manga = await getManga(chapter.manga_id, false)
-  chapter = await getFiles(chapter, manga, ctx, offset, history)
-  if (!chapter) {
-    return ctx.answerCbQuery('')
+  const { manga } = await getManga(chapter.manga_id, false)
+  const chapterResult = await cacheChapter(chapter, manga, ctx, offset, history, ctx.callbackQuery.message.message_id)
+  if (!chapterResult.ok) {
+    return ctx.answerCbQuery(chapterResult.message, true, { cache_time: 10 })
   }
+  chapter = chapterResult.chapter
   const keyboard = [
     [
       {
@@ -57,10 +58,10 @@ composer.action([
         callback_data: `chapter=${chapterId}:read=${ctx.match[2]}:copy=true:offset=${offset}:${history}`
       }
     ],
-    manga.manga.links['mal'] ? [
+    manga.links['mal'] ? [
       {
         text: 'Track reading on MAL',
-        url: `https://myanimelist.net/manga/${manga.manga.links['mal']}`
+        url: `https://myanimelist.net/manga/${manga.links['mal']}`
       }
     ] : undefined
   ].filter(Boolean)

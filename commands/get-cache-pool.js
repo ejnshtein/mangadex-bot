@@ -1,10 +1,11 @@
 const Composer = require('telegraf/composer')
 const composer = new Composer()
-const getFiles = require('../lib/get-files')
+const getFiles = require('../lib/cache-chapter')
+const { templates } = require('../lib')
 
 composer.command('pool', async ctx => {
   if (ctx.from.id === Number.parseInt(process.env.ADMIN_ID)) {
-    ctx.reply(`Here's ${Object.keys(getFiles.cachePool()).length} chapters waiting to be cached.`, {
+    ctx.reply(`Here's ${Object.keys(getFiles.cachePool()).length} chapters waiting to be cached.\nUpdated: ${templates.date()}`, {
       reply_markup: {
         inline_keyboard: cacheKeyboard(
           getFiles.getCacheBlockingValue(),
@@ -17,7 +18,7 @@ composer.command('pool', async ctx => {
 
 composer.action('cachepoolrefresh', async ctx => {
   if (ctx.from.id === Number.parseInt(process.env.ADMIN_ID)) {
-    ctx.editMessageText(`Here's ${Object.keys(getFiles.cachePool()).length} chapters waiting to be cached.`, {
+    ctx.editMessageText(`Here's ${Object.keys(getFiles.cachePool()).length} chapters waiting to be cached.\nUpdated: ${templates.date()}`, {
       reply_markup: {
         inline_keyboard: cacheKeyboard(
           getFiles.getCacheBlockingValue(),

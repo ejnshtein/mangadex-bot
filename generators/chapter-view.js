@@ -1,6 +1,5 @@
 const { getChapter, getManga } = require('mangadex-api').default
 const { templates } = require('../lib')
-const getFiles = require('../lib/get-files')
 const collection = require('../core/database')
 
 module.exports = async (chapterId, offset = 0, history = 'p=1:o=0') => {
@@ -20,7 +19,7 @@ module.exports = async (chapterId, offset = 0, history = 'p=1:o=0') => {
     }
   }
   if (chapterExists) {
-    chapter = await getFiles(chapter, manga)
+    chapter.telegraph = chapterExists.telegraph
     const keyboard = [
       [
         {
