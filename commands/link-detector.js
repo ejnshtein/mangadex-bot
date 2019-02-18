@@ -2,16 +2,39 @@ const Composer = require('telegraf/composer')
 const composer = new Composer()
 const { onlyPrivate } = require('../middlewares')
 const { mangaView, chapterView } = require('../generators')
+const { getManga } = require('mangadex-api').default
+const { templates, buffer } = require('../lib')
 
-composer.url(/mangadex\.org\/title\/([0-9]+)/i, onlyPrivate, async ctx => {
-  // console.log(ctx.match, ctx.message)
-  try {
-    var { extra, text } = await mangaView(ctx.match[1])
-  } catch (e) {
-    return ctx.reply(`Something went wrong...\n\n${e.description}`)
-  }
-  ctx.reply(text, extra)
-})
+composer.url(/mangadex\.org\/title\/([0-9]+)/i,
+  Composer.branch(onlyPrivate,
+    async ctx => {
+    // console.log(ctx.match, ctx.message)
+      try {
+        var { extra, text } = await mangaView(ctx.match[1])
+      } catch (e) {
+        return ctx.reply(`Something went wrong...\n\n${e.description}`)
+      }
+      return ctx.reply(text, extra)
+    }, async ctx => {
+      try {
+        var { manga } = await getManga(ctx.match[1])
+      } catch (e) {
+        return
+      }
+      return ctx.reply(templates.manga.viewPublic(ctx.match[1], manga), {
+        reply_markup: {
+          inline_keyboard: [
+            [
+              {
+                text: 'Read manga',
+                url: `https://t.me/${ctx.me}?start=${buffer.encode(`manga:${ctx.match[1]}`)}`
+              }
+            ]
+          ]
+        }
+      })
+    })
+)
 
 // composer.url(/mangadex\.org\/chapter\/([0-9]+)/i, async ctx => {
 // })

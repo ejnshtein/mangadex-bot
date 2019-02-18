@@ -1,7 +1,9 @@
-module.exports = ({ chat, reply }, next) => {
+module.exports = ({ chat }, next) => {
   if (chat.type === 'private') {
-    next()
-  } else if (chat.type === 'group' || chat.type === 'supergroup') {
-    reply('This bot works only in private chat.')
+    if (typeof next === 'function') {
+      next()
+    } else {
+      return true
+    }
   }
 }
