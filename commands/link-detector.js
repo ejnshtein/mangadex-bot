@@ -19,9 +19,11 @@ composer.url(/mangadex\.org\/title\/([0-9]+)/i,
       try {
         var { manga } = await getManga(ctx.match[1])
       } catch (e) {
+        console.log(e)
         return
       }
       return ctx.reply(templates.manga.viewPublic(ctx.match[1], manga), {
+        parse_mode: 'HTML',
         reply_markup: {
           inline_keyboard: [
             [
