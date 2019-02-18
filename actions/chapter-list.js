@@ -89,7 +89,7 @@ composer.action(/^chapterlist=(\S+):id=(\S+):offset=(\S+?):(\S+)$/i, async ctx =
             text: 'Manga description',
             callback_data: `manga=${mangaId}:${history}`
           },
-          cachedChapters.length && ctx.from.id === Number.parseInt(process.env.ADMIN_ID) ? {
+          cachedChapters.length === chapters.length && ctx.from.id === Number.parseInt(process.env.ADMIN_ID) ? {
             text: 'Cache full manga',
             callback_data: `cachemanga=${mangaId}:lang=${lang}`
           } : undefined
