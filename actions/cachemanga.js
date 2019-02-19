@@ -1,8 +1,8 @@
 const Composer = require('telegraf/composer')
 const composer = new Composer()
-const { getManga, getChapter } = require('mangadex-api').default
+const { getManga, getChapter, getLangName } = require('mangadex-api').default
 const cacheChapter = require('../lib/cache-chapter')
-// const { buttons, templates, getUrlInMessage, getGroupName } = require('../lib')
+// const { get } = require('../lib')
 
 const cachePool = {}
 
@@ -100,11 +100,23 @@ async function uploadChapter (mangaId, lang, manga, chapters, id, ctx) {
     return
   }
   if (!chapters[id]) {
+    delete cachePool[mangaId]
     return ctx.telegram.editMessageText(
       ctx.callbackQuery.message.chat.id,
       ctx.callbackQuery.message.message_id,
       undefined,
-      `Chapters from ${manga.title} has been fully cached.`)
+      `"${manga.title}" in ${getLangName(lang)} has been fully cached.`, {
+        reply_markup: {
+          inline_keyboard: [
+            [
+              {
+                text: 'OK',
+                callback_data: 'delete'
+              }
+            ]
+          ]
+        }
+      })
   }
   const chapter = await getChapter(chapters[id])
   const cacheResult = await cacheChapter(chapter, manga, ctx, undefined, undefined, undefined, true)

@@ -20,7 +20,7 @@ composer.action(/^chapterlist=(\S+):id=(\S+):offset=(\S+?):(\S+)$/i, async ctx =
     .filter(el => el.lang_code === lang)
 
   const slicedChapters = chapters.slice(offset, offset + 20)
-  const cachedChapters = await ctx.db('chapters').find({ id: { $in: chapters.map(el => el.id) } }, 'id').exec()
+  const cachedChapters = await ctx.db('chapters').find({ id: { $in: chapters.map(({ id }) => id) } }, 'id').exec()
   const keyboard = [
     []
   ]
@@ -79,7 +79,7 @@ composer.action(/^chapterlist=(\S+):id=(\S+):offset=(\S+?):(\S+)$/i, async ctx =
     )
   }
 
-  // console.log(ctx.from.id === Number.parseInt(process.env.ADMIN_ID), `cachemanga=${mangaId}:lang=${lang}`)
+  // console.log(ctx.from.id === Number.parseInt(process.env.ADMIN_ID), chapters.filter(el => !cachedChapters.some(ch => ch.toObject().id === el.id)).map(({ id }) => id).length)
   ctx.editMessageText(templates.manga.view(mangaId, manga, getUrlInMessage(ctx.callbackQuery.message), Boolean(chapter)), {
     parse_mode: 'HTML',
     reply_markup: {
@@ -89,7 +89,7 @@ composer.action(/^chapterlist=(\S+):id=(\S+):offset=(\S+?):(\S+)$/i, async ctx =
             text: 'Manga description',
             callback_data: `manga=${mangaId}:${history}`
           },
-          ctx.from.id === Number.parseInt(process.env.ADMIN_ID) ? {
+          ctx.from.id === Number.parseInt(process.env.ADMIN_ID) && chapters.filter(el => !cachedChapters.some(ch => ch.toObject().id === el.id)).map(({ id }) => id).length ? {
             text: 'Cache full manga',
             callback_data: `cachemanga=${mangaId}:lang=${lang}`
           } : undefined
