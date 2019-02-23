@@ -12,6 +12,8 @@ bot.telegram.getMe()
 
 bot.context.db = collection
 
+bot.context.collection = collection
+
 bot.use(
   rateLimit({
     window: 2000,
