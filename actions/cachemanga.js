@@ -196,7 +196,7 @@ const cacheSingleChapter = (chatId, messageId, lang, chapter, manga, me) => new 
   } catch (e) {
     return reject(new Error(`Chapter ${chapter.chapter} caching error: ${e.message}`))
   }
-  const msg = await client.sendMessage(chatId, `Starting caching ${chapter.chapter}`, {
+  const msg = await client.sendMessage(chatId, `Starting caching chapter ${chapter.chapter}`, {
     reply_to_message_id: messageId
   })
   chapterCaching.on('done', () => {
@@ -206,7 +206,7 @@ const cacheSingleChapter = (chatId, messageId, lang, chapter, manga, me) => new 
   chapterCaching.on('error', reject)
 
   chapterCaching.on('pictureCached', ({ total, cached }) => {
-    queue(msg.chat.id, msg.message_id, `Chapter ${chapter.chapter}\nCached ${cached} of ${total} pictures.`, {
+    queue(msg.chat.id, msg.message_id, `Chapter ${chapter.chapter} caching.\nCached ${cached} of ${total} pictures.`, {
       reply_markup: {
         inline_keyboard: [
           [
