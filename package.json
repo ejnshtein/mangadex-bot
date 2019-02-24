@@ -1,6 +1,6 @@
 {
   "name": "mangadex_bot",
-  "version": "2.1.1",
+  "version": "2.2.0",
   "description": "telegram-bot for reading manga on mangadex right in telegram",
   "main": "app.js",
   "dependencies": {
