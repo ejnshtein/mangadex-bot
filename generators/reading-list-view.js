@@ -43,7 +43,7 @@ module.exports = async (userId, offset = 0) => {
       : []
     const navigation = []
 
-    if (slicedChapters.length === 10 && user.currenly_reading.slice(offset + 10, offset + 20).length >= 1) {
+    if (slicedChapters.length === 10 && user.currently_reading.slice(offset + 10, offset + 20).length >= 1) {
       navigation.push(
         {
           text: buttons.next,
