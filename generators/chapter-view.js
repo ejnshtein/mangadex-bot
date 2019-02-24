@@ -1,8 +1,8 @@
 const { getChapter, getManga } = require('mangadex-api').default
-const { templates } = require('../lib')
+const { templates, getList } = require('../lib')
 const collection = require('../core/database')
 
-module.exports = async (chapterId, offset = 0, history = 'p=1:o=0') => {
+module.exports = async (chapterId, offset = 0, history = 'p=1:o=0', list) => {
   let chapter = await getChapter(chapterId)
   const manga = await getManga(chapter.manga_id, false)
   // console.log(chapter)
@@ -34,11 +34,11 @@ module.exports = async (chapterId, offset = 0, history = 'p=1:o=0') => {
       [
         {
           text: 'Chapter list',
-          callback_data: `chapterlist=${chapter.lang_code}:id=${chapter.manga_id}:offset=${offset}:${history}`
+          callback_data: `${list ? `list=${list}:` : ''}chapterlist=${chapter.lang_code}:id=${chapter.manga_id}:offset=${offset}${list ? '' : `:${history}`}`
         },
         {
           text: 'Manga description',
-          callback_data: `manga=${chapter.manga_id}:${history}`
+          callback_data: `${list ? `list=${list}:` : ''}manga=${chapter.manga_id}${list ? '' : `:${history}`}`
         }
       ],
       manga.manga.links['mal'] ? [
@@ -48,7 +48,7 @@ module.exports = async (chapterId, offset = 0, history = 'p=1:o=0') => {
         }
       ] : undefined
     ].filter(Boolean)
-    const messageText = templates.manga.chapter(chapter, manga)
+    const messageText = templates.manga.chapter(chapter, manga, undefined, list ? `<b>List:</b> ${getList(list.match(/([a-z]+)/i)[1])}` : '')
     return {
       chapter,
       manga,
@@ -71,7 +71,7 @@ module.exports = async (chapterId, offset = 0, history = 'p=1:o=0') => {
             [
               {
                 text: 'Sure.',
-                callback_data: `chapter=${chapter.id}:read=false:copy=false:offset=${offset}:${history}`
+                callback_data: `${list ? `list=${list}:` : ''}chapter=${chapter.id}:read=false:copy=false:offset=${offset}${list ? '' : `:${history}`}`
               }
             ]
           ]

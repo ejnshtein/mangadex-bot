@@ -163,7 +163,11 @@ async function uploadChapter (mangaId, lang, manga, id, ctx) {
     telegraph: telegraphLink,
     timestamp: chapter.timestamp,
     manga_id: chapter.manga_id,
-    manga_title: manga.title
+    manga_title: manga.title,
+    title: chapter.title,
+    volume: chapter.volume,
+    chapter: chapter.chapter,
+    lang: chapter.lang_code
   })
   chapters.cached++
   try {

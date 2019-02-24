@@ -1,13 +1,14 @@
 const { getManga } = require('mangadex-api').default
-const { templates, groupBy, loadLangCode, buttons } = require('../lib')
+const { templates, groupBy, loadLangCode, buttons, getList } = require('../lib')
 
-module.exports = async (mangaId, queryUrl = 'https://mangadex.org/search?title=', history = 'p=1:o=0') => {
+module.exports = async (mangaId, queryUrl = 'https://mangadex.org/search?title=', history = 'p=1:o=0', list, favorite = false) => {
   const { manga, chapter } = await getManga(mangaId)
   const messageText = templates.manga.view(
     mangaId,
     manga,
     queryUrl,
-    Boolean(chapter)
+    Boolean(chapter),
+    list ? `<b>List:</b> ${getList(list.match(/([a-z]+)/i)[1])}` : ''
   )
   const withChapters = Boolean(chapter)
 
@@ -22,7 +23,7 @@ module.exports = async (mangaId, queryUrl = 'https://mangadex.org/search?title='
     for (const code of Object.keys(chapters)) {
       const obj = {
         text: `Read in ${loadLangCode(code)}`,
-        callback_data: `chapterlist=${code}:id=${mangaId}:offset=0:${history}`
+        callback_data: `${list ? `list=${list}:` : ''}chapterlist=${code}:id=${mangaId}:offset=0${list ? '' : `:${history}`}`
       }
       if (keyboard[keyboard.length - 1].length < 2) {
         keyboard[keyboard.length - 1].push(obj)
@@ -45,11 +46,19 @@ module.exports = async (mangaId, queryUrl = 'https://mangadex.org/search?title='
     [
       {
         text: buttons.back,
-        callback_data: `${history}`
+        callback_data: list ? `list=${list}` : history
       },
       {
         text: buttons.page.refresh(),
-        callback_data: `manga=${mangaId}:${history}`
+        callback_data: `${list ? `list=${list}:` : ''}manga=${mangaId}${list ? '' : `:${history}`}`
+      }
+    ]
+  )
+  keyboard.unshift(
+    [
+      {
+        text: favorite ? `Unfavorite ${buttons.favorite(false)}` : `Favorite title ${buttons.favorite()}`,
+        callback_data: `favorite:${mangaId}`
       },
       {
         text: buttons.share,

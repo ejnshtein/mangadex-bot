@@ -9,8 +9,9 @@ composer.url(/mangadex\.org\/title\/([0-9]+)/i,
   Composer.branch(onlyPrivate,
     async ctx => {
     // console.log(ctx.match, ctx.message)
+      const favorited = ctx.state && ctx.state.user && ctx.state.user.favorite_titles && ctx.state.user.toObject().favorite_titles.some(el => el.manga_id === Number(ctx.match[1]))
       try {
-        var { extra, text } = await mangaView(ctx.match[1])
+        var { extra, text } = await mangaView(ctx.match[1], undefined, undefined, undefined, favorited)
       } catch (e) {
         return ctx.reply(`Something went wrong...\n\n${e.description}`)
       }

@@ -42,9 +42,12 @@ const collections = [
       favorite_titles: {
         type: [
           new Schema({
-            status: String,
-            chapter_id: Number,
             manga_id: Number
+          }, {
+            timestamps: {
+              createdAt: 'created_at',
+              updatedAt: 'updated_at'
+            }
           })
         ],
         default: [],
@@ -102,6 +105,22 @@ const collections = [
         type: Number,
         unique: true
       },
+      title: {
+        type: String,
+        required: false
+      },
+      lang: {
+        type: String,
+        required: false
+      },
+      chapter: {
+        type: String,
+        required: false
+      },
+      volume: {
+        type: String,
+        required: false
+      },
       telegraph: {
         type: String,
         required: true
@@ -123,6 +142,23 @@ const collections = [
     })
   }
 ]
+
+collections.reverse().forEach(collection => {
+  if (collection.pre) {
+    Object.keys(collection.pre).forEach(preKey => {
+      collection.schema.pre(preKey, collection.pre[preKey])
+    })
+  }
+  if (collection.method) {
+    collection.schema.method(collection.method)
+  }
+  if (collection.virtual) {
+    Object.keys(collection.virtual).forEach(virtual => {
+      collection.schema.virtual(virtual, collection.virtual[virtual])
+    })
+  }
+  connection.model(collection.name, collection.schema)
+})
 
 module.exports = collectionName => {
   const collection = collections.find(el => el.name === collectionName)
