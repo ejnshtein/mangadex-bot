@@ -9,6 +9,8 @@
 - Inline search
 - Mangadex manga links detector (bot will send manga description after you send him a link)
 - Instant reading via Instant View technology
+- Favorite list
+- Reading list
 
 ## Commands
 
