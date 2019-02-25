@@ -10,6 +10,7 @@ composer.action(/^list=fav-([0-9]+)$/i, async ctx => {
     console.log(e)
     return ctx.reply('Something went wrong...')
   }
+  ctx.answerCbQuery('')
   return ctx.editMessageText(text, extra)
 })
 

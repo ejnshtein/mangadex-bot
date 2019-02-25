@@ -70,6 +70,7 @@ composer.action([
         }
       })
     } else {
+      ctx.answerCbQuery('')
       ctx.editMessageText(messageText, {
         parse_mode: 'HTML',
         reply_markup: {

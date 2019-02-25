@@ -10,6 +10,7 @@ composer.action(/^list=read-([0-9]+)$/i, async ctx => {
     console.log(e)
     return ctx.answerCbQuery('Something went wrong...')
   }
+  ctx.answerCbQuery('')
   return ctx.editMessageText(text, extra)
 })
 
