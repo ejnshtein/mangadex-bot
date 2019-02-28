@@ -9,7 +9,7 @@ const collection = require('../core/database')
 const cachePool = new Map()
 
 composer.action(/^cachemanga=(\S+):lang=(\S+)$/i, async ctx => {
-  if (!ctx.from.id === Number.parseInt(process.env.ADMIN_ID)) return ctx.answerCbQuery('No.')
+  if (!ctx.from.id === process.env.ADMIN_ID) return ctx.answerCbQuery('No.')
   const lang = ctx.match[2]
   const mangaId = Number.parseInt(ctx.match[1])
   if (cachePool.has(mangaId)) {
@@ -42,7 +42,7 @@ composer.action(/^cachemanga=(\S+):lang=(\S+)$/i, async ctx => {
 })
 
 composer.action(/^cachemangafull=(\S+):lang=(\S+)$/i, async ctx => {
-  if (!ctx.from.id === Number.parseInt(process.env.ADMIN_ID)) return ctx.answerCbQuery('No.')
+  if (!ctx.from.id === process.env.ADMIN_ID) return ctx.answerCbQuery('No.')
   const lang = ctx.match[2]
   const mangaId = Number.parseInt(ctx.match[1])
   if (cachePool.has(mangaId)) {

@@ -9,6 +9,7 @@ module.exports = async (query = '', page = 1, offset = 0) => {
       p: page
     }
   })
+
   // console.log(query, page, offset)
   const keyboard = searchResult.titles
     .slice(offset, offset + 10)
@@ -23,24 +24,37 @@ module.exports = async (query = '', page = 1, offset = 0) => {
 
   if (offset >= 10) {
     if (offset < 30) {
-      keyboard.unshift([{
-        text: buttons.offset.minus(10),
-        callback_data: `p=${page}:o=${offset - 10}`
-      }, {
-        text: buttons.offset.plus(10),
-        callback_data: `p=${page}:o=${offset + 10}`
-      }])
+      keyboard.unshift(
+        [
+          {
+            text: buttons.offset.minus(10),
+            callback_data: `p=${page}:o=${offset - 10}`
+          },
+          {
+            text: buttons.offset.plus(10),
+            callback_data: `p=${page}:o=${offset + 10}`
+          }
+        ]
+      )
     } else {
-      keyboard.unshift([{
-        text: buttons.offset.minus(10),
-        callback_data: `p=${page}:o=${offset - 10}`
-      }])
+      keyboard.unshift(
+        [
+          {
+            text: buttons.offset.minus(10),
+            callback_data: `p=${page}:o=${offset - 10}`
+          }
+        ]
+      )
     }
   } else {
-    keyboard.unshift([{
-      text: buttons.offset.plus(10),
-      callback_data: `p=${page}:o=${offset + 10}`
-    }])
+    keyboard.unshift(
+      [
+        {
+          text: buttons.offset.plus(10),
+          callback_data: `p=${page}:o=${offset + 10}`
+        }
+      ]
+    )
   }
   const pageLine = [
     {
@@ -83,10 +97,12 @@ module.exports = async (query = '', page = 1, offset = 0) => {
     }
   }
   keyboard.unshift(pageLine)
-  keyboard.unshift([{
-    text: 'Switch to inline',
-    switch_inline_query_current_chat: query
-  }])
+  keyboard.unshift([
+    {
+      text: 'Switch to inline',
+      switch_inline_query_current_chat: query
+    }
+  ])
   return {
     text: templates.searchText(`https://mangadex.org/search?title=${query}`, query, page, offset),
     extra: {
