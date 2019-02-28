@@ -14,6 +14,7 @@ module.exports = async (mangaId, lang, user, message, offset = 0, history = 'p=1
 
   const slicedChapters = chapters.slice(offset, offset + 20)
   const cachedChapters = await collection('chapters').find({ id: { $in: chapters.map(({ id }) => id) } }, 'id').exec()
+  const unCachedChapters = chapters.filter(el => !cachedChapters.some(ch => ch.toObject().id === el.id))
   const keyboard = [
     []
   ]
@@ -82,8 +83,8 @@ module.exports = async (mangaId, lang, user, message, offset = 0, history = 'p=1
               text: 'Manga description',
               callback_data: `${list ? `list=${list}:` : ''}manga=${mangaId}${list ? '' : `:${history}`}`
             },
-            user.id === Number.parseInt(process.env.ADMIN_ID) && chapters.filter(el => !cachedChapters.some(ch => ch.toObject().id === el.id)).map(({ id }) => id).length ? {
-              text: 'Cache full manga',
+            user.id === process.env.ADMIN_ID && unCachedChapters.length ? {
+              text: `Cache ${unCachedChapters.length}/${chapters.length} chapters`,
               callback_data: `cachemanga=${mangaId}:lang=${lang}`
             } : undefined
           ].filter(Boolean),

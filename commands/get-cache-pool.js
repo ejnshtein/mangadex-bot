@@ -4,7 +4,7 @@ const getFiles = require('../lib/cache-chapter')
 const { templates } = require('../lib')
 
 composer.command('pool', async ctx => {
-  if (ctx.from.id === Number.parseInt(process.env.ADMIN_ID)) {
+  if (ctx.from.id === process.env.ADMIN_ID) {
     ctx.reply(`Here's ${getFiles.cachePoolSize()} chapters waiting to be cached, updating: ${getFiles.updatePoolSize()}\nUpdated: ${templates.date()}`, {
       reply_markup: {
         inline_keyboard: cacheKeyboard(
@@ -17,7 +17,7 @@ composer.command('pool', async ctx => {
 })
 
 composer.action('cachepoolrefresh', async ctx => {
-  if (ctx.from.id === Number.parseInt(process.env.ADMIN_ID)) {
+  if (ctx.from.id === process.env.ADMIN_ID) {
     ctx.editMessageText(`Here's ${getFiles.cachePoolSize()} chapters waiting to be cached, updating: ${getFiles.updatePoolSize()}\nUpdated: ${templates.date()}`, {
       reply_markup: {
         inline_keyboard: cacheKeyboard(
@@ -30,7 +30,7 @@ composer.action('cachepoolrefresh', async ctx => {
 })
 
 composer.action(/^cachepool=(\S+)$/i, async ctx => {
-  if (ctx.from.id === Number.parseInt(process.env.ADMIN_ID)) {
+  if (ctx.from.id === process.env.ADMIN_ID) {
     switch (ctx.match[1]) {
       case 'on':
         getFiles.setCachingBlocking(true)
@@ -51,7 +51,7 @@ composer.action(/^cachepool=(\S+)$/i, async ctx => {
 })
 
 composer.action(/^updatecache=(\S+)$/i, async ctx => {
-  if (ctx.from.id === Number.parseInt(process.env.ADMIN_ID)) {
+  if (ctx.from.id === process.env.ADMIN_ID) {
     switch (ctx.match[1]) {
       case 'on':
         getFiles.setUpdateCachingBlocking(true)

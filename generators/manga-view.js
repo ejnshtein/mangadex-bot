@@ -1,17 +1,12 @@
 const { getManga } = require('mangadex-api').default
 const { templates, groupBy, loadLangCode, buttons, getList } = require('../lib')
+const collection = require('../core/database')
 
 module.exports = async (mangaId, queryUrl = 'https://mangadex.org/search?title=', history = 'p=1:o=0', list, favorite = false) => {
   const { manga, chapter } = await getManga(mangaId)
-  const messageText = templates.manga.view(
-    mangaId,
-    manga,
-    queryUrl,
-    Boolean(chapter),
-    list ? `<b>List:</b> ${getList(list.match(/([a-z]+)/i)[1])}` : ''
-  )
   const withChapters = Boolean(chapter)
 
+  const cachedChapters = await collection('chapters').find({ id: { $in: chapter.map(({ id }) => id) } }, 'id').exec()
   const keyboard = [
     []
   ]
@@ -21,8 +16,14 @@ module.exports = async (mangaId, queryUrl = 'https://mangadex.org/search?title='
       'lang_code'
     )
     for (const code of Object.keys(chapters)) {
+      const cachedChaptersLength = chapters[code]
+        .reduce((acc, v) => {
+          if (!acc.some(x => v.chapter === x.chapter)) acc.push(v)
+          return acc
+        }, [])
+        .filter(el => cachedChapters.some(ch => ch.toObject().id === el.id)).length
       const obj = {
-        text: `Read in ${loadLangCode(code)}`,
+        text: `${cachedChaptersLength === chapters[code].length ? `⬇` : cachedChaptersLength ? `↻ (${cachedChaptersLength}/${chapters[code].length})` : ''} Read in ${loadLangCode(code)}`,
         callback_data: `${list ? `list=${list}:` : ''}chapterlist=${code}:id=${mangaId}:offset=0${list ? '' : `:${history}`}`
       }
       if (keyboard[keyboard.length - 1].length < 2) {
@@ -69,7 +70,13 @@ module.exports = async (mangaId, queryUrl = 'https://mangadex.org/search?title='
   return {
     manga,
     chapter,
-    text: messageText,
+    text: templates.manga.view(
+      mangaId,
+      manga,
+      queryUrl,
+      Boolean(chapter),
+      list ? `<b>List:</b> ${getList(list.match(/([a-z]+)/i)[1])}` : ''
+    ),
     extra: {
       reply_markup: {
         inline_keyboard: keyboard
