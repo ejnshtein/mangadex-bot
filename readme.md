@@ -12,6 +12,12 @@
 - Favorite list
 - Reading list
 
+## In progress
+
+- Gets updates (RSS) for favorite manga in separate chat
+- Mangadex MDList sync (only in bot)
+- Some other stuff like query caching to boost speed and others...
+
 ## Commands
 
 Use `/index` or `/search` to access mangadex search page or `/search <manga title>` to search some manga on mangadex.  
