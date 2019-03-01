@@ -1,4 +1,7 @@
-const { getManga } = require('mangadex-api').default
+const Mangadex = require('mangadex-api').default
+const client = new Mangadex({
+  shareMangaCache: true
+})
 const { buttons, templates, getUrlInMessage, getGroupName, getList } = require('../lib')
 const collection = require('../core/database')
 
@@ -7,8 +10,8 @@ module.exports = async (mangaId, lang, user, message, offset = 0, history = 'p=1
 
   const alreadyRead = user.already_read && user.already_read.map(el => el.chapter_id)
 
-  const { chapter, manga } = await getManga(mangaId)
-
+  const { chapter, manga } = await client.getManga(mangaId)
+  
   const chapters = chapter
     .filter(el => el.lang_code === lang)
 

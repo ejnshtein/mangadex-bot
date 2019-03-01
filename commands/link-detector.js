@@ -2,7 +2,8 @@ const Composer = require('telegraf/composer')
 const composer = new Composer()
 const { onlyPrivate } = require('../middlewares')
 const { mangaView } = require('../generators')
-const { getManga } = require('mangadex-api').default
+const Mangadex = require('mangadex-api').default
+const client = new Mangadex({ shareMangaCache: true })
 const { templates, buffer } = require('../lib')
 
 composer.url(/mangadex\.org\/title\/([0-9]+)/i,
@@ -18,7 +19,7 @@ composer.url(/mangadex\.org\/title\/([0-9]+)/i,
       return ctx.reply(text, extra)
     }, async ctx => {
       try {
-        var { manga } = await getManga(ctx.match[1])
+        var { manga } = await client.getManga(ctx.match[1])
       } catch (e) {
         console.log(e)
         return
