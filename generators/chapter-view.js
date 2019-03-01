@@ -1,10 +1,15 @@
-const { getChapter, getManga } = require('mangadex-api').default
+const Mangadex = require('mangadex-api').default
 const { templates, getList } = require('../lib')
 const collection = require('../core/database')
 
+const client = new Mangadex({
+  shareChapterCache: true,
+  shareMangaCache: true
+})
+
 module.exports = async (chapterId, offset = 0, history = 'p=1:o=0', list) => {
-  let chapter = await getChapter(chapterId)
-  const manga = await getManga(chapter.manga_id, false)
+  let chapter = await client.getChapter(chapterId)
+  const manga = await client.getManga(chapter.manga_id, false)
   // console.log(chapter)
   try {
     var chapterExists = await collection('chapters').findOne({ id: chapter.id }).exec()

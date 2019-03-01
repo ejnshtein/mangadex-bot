@@ -1,6 +1,7 @@
 const Composer = require('telegraf/composer')
 const composer = new Composer()
-const { search, getManga } = require('mangadex-api').default
+const Mangadex = require('mangadex-api').default
+const client = new Mangadex({ shareMangaCache: true })
 const { buffer, templates } = require('../lib')
 const { AllHtmlEntities } = require('html-entities')
 const { decode } = new AllHtmlEntities()
@@ -10,7 +11,7 @@ composer.inlineQuery(/^manga:([0-9]+)$/i, async ({ match, me, inlineQuery, answe
   if (inlineQuery.offset && inlineQuery.offset === '1') { return answerInlineQuery([], queryOptions()) }
   const mangaId = match[1]
   try {
-    var { manga } = await getManga(mangaId)
+    var { manga } = await client.getManga(mangaId)
   } catch (e) {
     return answerInlineQuery(sendError(e), queryOptions())
   }
@@ -110,7 +111,7 @@ composer.on('inline_query', async ctx => {
   // console.log(offset)
   // console.log(query, offset)
   try {
-    var searchResult = await search(query, 'title', { params: { p: offset } })
+    var searchResult = await client.search(query, 'title', { params: { p: offset } })
   } catch (e) {
     return ctx.answerInlineQuery(sendError(e), queryOptions())
   }

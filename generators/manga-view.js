@@ -1,9 +1,12 @@
-const { getManga } = require('mangadex-api').default
+const Mangadex = require('mangadex-api').default
+const client = new Mangadex({
+  shareMangaCache: true
+})
 const { templates, groupBy, loadLangCode, buttons, getList } = require('../lib')
 const collection = require('../core/database')
 
 module.exports = async (mangaId, queryUrl = 'https://mangadex.org/search?title=', history = 'p=1:o=0', list, favorite = false) => {
-  const { manga, chapter } = await getManga(mangaId)
+  const { manga, chapter } = await client.getManga(mangaId)
   const withChapters = Boolean(chapter)
 
   const cachedChapters = await collection('chapters').find({ id: { $in: chapter.map(({ id }) => id) } }, 'id').exec()

@@ -1,6 +1,7 @@
 const { Telegram, Composer } = require('telegraf')
 const composer = new Composer()
-const { getChapter, getManga } = require('mangadex-api').default
+const Mangadex = require('mangadex-api').default
+const mangadexClient = new Mangadex({ shareMangaCache: true, shareChapterCache: true })
 const { templates, setCurrentlyReading } = require('../lib')
 const cacheChapter = require('../lib/cache-chapter')
 const client = new Telegram(process.env.BOT_TOKEN)
@@ -16,8 +17,8 @@ composer.action([
   const copy = ctx.match[3] === 'true'
   const offset = ctx.match[4]
   const history = ctx.match[5]
-  let chapter = await getChapter(chapterId)
-  const { manga } = await getManga(chapter.manga_id, false)
+  let chapter = await mangadexClient.getChapter(chapterId)
+  const { manga } = await mangadexClient.getManga(chapter.manga_id, false)
   try {
     var chapterCaching = await cacheChapter(chapter, manga, ctx)
   } catch (e) {
@@ -148,8 +149,8 @@ composer.action([
   const copy = ctx.match[4] === 'true'
   const offset = ctx.match[5]
   const history = ctx.match[6]
-  let chapter = await getChapter(chapterId)
-  const { manga } = await getManga(chapter.manga_id, false)
+  let chapter = await mangadexClient.getChapter(chapterId)
+  const { manga } = await mangadexClient.getManga(chapter.manga_id, false)
   try {
     var chapterCaching = await cacheChapter(chapter, manga, ctx)
   } catch (e) {

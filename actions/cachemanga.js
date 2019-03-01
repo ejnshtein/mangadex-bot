@@ -1,7 +1,11 @@
 const { Telegram, Composer } = require('telegraf')
 const composer = new Composer()
 const client = new Telegram(process.env.BOT_TOKEN)
-const { getManga, getChapter, getLangName } = require('mangadex-api').default
+const Mangadex = require('mangadex-api').default
+const mangadexClient = new Mangadex({
+  shareMangaCache: true,
+  shareChapterCache: true
+})
 const cacheChapter = require('../lib/cache-chapter')
 const collection = require('../core/database')
 // const { get } = require('../lib')
@@ -17,7 +21,7 @@ composer.action(/^cachemanga=(\S+):lang=(\S+)$/i, async ctx => {
   }
   ctx.answerCbQuery('')
 
-  const { chapter } = await getManga(mangaId)
+  const { chapter } = await mangadexClient.getManga(mangaId)
 
   const chapters = chapter
     .filter(el => el.lang_code === lang)
@@ -66,7 +70,7 @@ composer.action(/^cachemangafull=(\S+):lang=(\S+)$/i, async ctx => {
     cached: 0,
     chapters: []
   })
-  const { chapter: chapters, manga } = await getManga(mangaId)
+  const { chapter: chapters, manga } = await mangadexClient.getManga(mangaId)
 
   const chapterstemp = chapters
     .filter(el => el.lang_code === lang)
@@ -128,7 +132,7 @@ async function uploadChapter (mangaId, lang, manga, id, ctx) {
       ctx.callbackQuery.message.chat.id,
       ctx.callbackQuery.message.message_id,
       undefined,
-      `"${manga.title}" in ${getLangName(lang)} has been fully cached.`, {
+      `"${manga.title}" in ${Mangadex.getLangName(lang)} has been fully cached.`, {
         reply_markup: {
           inline_keyboard: [
             [
@@ -141,7 +145,7 @@ async function uploadChapter (mangaId, lang, manga, id, ctx) {
         }
       })
   }
-  const chapter = await getChapter(chapters.chapters[id])
+  const chapter = await mangadexClient.getChapter(chapters.chapters[id])
   try {
     var telegraphLink = await cacheSingleChapter(
       ctx.callbackQuery.message.chat.id,
