@@ -2,10 +2,7 @@ const { Telegram, Composer } = require('telegraf')
 const composer = new Composer()
 const client = new Telegram(process.env.BOT_TOKEN)
 const Mangadex = require('mangadex-api').default
-const mangadexClient = new Mangadex({
-  shareMangaCache: true,
-  shareChapterCache: true
-})
+const mangadexClient = new Mangadex()
 const cacheChapter = require('../lib/cache-chapter')
 const collection = require('../core/database')
 // const { get } = require('../lib')
@@ -210,8 +207,12 @@ const cacheSingleChapter = (chatId, messageId, lang, chapter, manga, me) => new 
   chapterCaching.on('done', () => {
     client.deleteMessage(msg.chat.id, msg.message_id)
     resolve(chapterCaching.telegraph)
+    chapterCaching = null
   })
-  chapterCaching.on('error', reject)
+  chapterCaching.on('error', e => {
+    reject(e)
+    chapterCaching = null
+  })
 
   chapterCaching.on('pictureCached', ({ total, cached }) => {
     queue(msg.chat.id, msg.message_id, `Chapter ${chapter.chapter} caching.\nCached ${cached} of ${total} pictures.`, {
