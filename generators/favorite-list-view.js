@@ -30,12 +30,15 @@ module.exports = async (userId, offset = 0) => {
     }
   }
   if (user) {
-    const slicedChapters = user.favorite_titles
+    const chapters = user.favorite_titles
       .reduce((acc, v) => {
         if (!acc.some(x => v.manga_id === x.manga_id)) acc.push(v)
         return acc
       }, [])
+
+    const slicedChapters = chapters
       .slice(offset, offset + 10)
+
     const keyboard = slicedChapters
       ? slicedChapters
         .map(chapter =>
@@ -47,7 +50,7 @@ module.exports = async (userId, offset = 0) => {
       : []
     const navigation = []
 
-    if (slicedChapters.length === 10 && user.favorite_titles.slice(offset + 10, offset + 20).length >= 1) {
+    if (slicedChapters.length === 10 && chapters.slice(offset + 10, offset + 20).length >= 1) {
       navigation.push(
         {
           text: buttons.next,
@@ -70,7 +73,7 @@ module.exports = async (userId, offset = 0) => {
       )
     }
     return {
-      text: templates.manga.favoriteListView(user.favorite_titles.length, offset),
+      text: templates.manga.favoriteListView(chapters.length, offset),
       extra: {
         reply_markup: {
           inline_keyboard: [
