@@ -1,7 +1,5 @@
 const Mangadex = require('mangadex-api').default
-const client = new Mangadex({
-  shareMangaCache: true
-})
+const client = new Mangadex({ shareMangaCache: true })
 const { templates, groupBy, loadLangCode, buttons, getList } = require('../lib')
 const collection = require('../core/database')
 
@@ -9,6 +7,11 @@ module.exports = async (mangaId, queryUrl = 'https://mangadex.org/search?title='
   const { manga, chapter } = await client.getManga(mangaId)
   const withChapters = Boolean(chapter)
 
+  // checkManga(
+  //   typeof mangaId === 'string' ? Number.parseInt(mangaId) : mangaId,
+  //   manga,
+  //   chapter
+  // )
   const cachedChapters = await collection('chapters').find({ id: { $in: chapter.map(({ id }) => id) } }, 'id').exec()
   const keyboard = [
     []
@@ -89,3 +92,44 @@ module.exports = async (mangaId, queryUrl = 'https://mangadex.org/search?title='
     }
   }
 }
+ /*
+async function checkManga (mangaId, manga, chapters) {
+  const mangaData = await collection('manga').findOne({ id: mangaId }).exec()
+
+  if (mangaData) {
+    if (mangaData.updated_at - Date.now() > 1000 * 60 * 60 * 24 * 7) {
+      let edited = false
+      if (mangaData.cover_url !== manga.cover_url) {
+        mangaData.cover_url = manga.cover_url
+        mangaData.markModified('cover_url')
+        edited = true
+      }
+      if (mangaData.status !== manga.status) {
+        mangaData.status = manga.status
+        mangaData.markModified('status')
+        edited = true
+      }
+      if (mangaData.toObject().genres.filter(el => !manga.genres.includes(el)).length) {
+        mangaData.genres = manga.genres
+        mangaData.markModified('genres')
+        edited = true
+      }
+      if (mangaData.description !== manga.description) {
+        mangaData.description = manga.description
+        mangaData.markModified('description')
+        edited = true
+      }
+      if (edited) {
+        return mangaData.save()
+      }
+    }
+    return undefined
+  } else {
+    collection('manga').create({
+      id: mangaId,
+      cover_url: manga.cover_url,
+      last_chapter_id: chapters.reduce((acc, val, arr) => )
+    })
+  }
+}
+*/

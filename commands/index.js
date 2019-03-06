@@ -6,4 +6,5 @@ module.exports = app => {
   require('./notes')(app)
   require('./reading-list')(app)
   require('./favorite-list')(app)
+  require('./getid')(app)
 }
