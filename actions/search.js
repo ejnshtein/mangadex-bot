@@ -4,13 +4,17 @@ const { mangaSearchView } = require('../generators')
 const { loadSearchParams } = require('../lib')
 
 composer.action(/^p=(\S+):o=(\S+)$/i, async ctx => {
-  ctx.answerCbQuery('')
   const page = Number.parseInt(ctx.match[1])
   const offset = Number.parseInt(ctx.match[2])
   const {
     value: searchValue
   } = loadSearchParams(ctx.callbackQuery.message, page, offset)
-  const { text, extra } = await mangaSearchView(searchValue, page, offset)
+  try {
+    var { text, extra } = await mangaSearchView(searchValue, page, offset)
+  } catch (e) {
+    return ctx.answerCbQuery(e.message)
+  }
+  ctx.answerCbQuery('')
   ctx.editMessageText(text, extra)
 })
 

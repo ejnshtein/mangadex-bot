@@ -14,14 +14,14 @@ composer.url(/mangadex\.org\/title\/([0-9]+)/i,
       try {
         var { extra, text } = await mangaView(ctx.match[1], undefined, undefined, undefined, favorited)
       } catch (e) {
-        return ctx.reply(`Something went wrong...\n\n${e.description}`)
+        return ctx.reply(`Something went wrong...\n\n${e.message}`)
       }
       return ctx.reply(text, extra)
     }, async ctx => {
       try {
         var { manga } = await client.getManga(ctx.match[1])
       } catch (e) {
-        console.log(e)
+        // console.log(e)
         return
       }
       return ctx.reply(templates.manga.viewPublic(ctx.match[1], manga), {

@@ -10,6 +10,8 @@ const { EventEmitter } = require('events')
 
 const cachePool = new Map()
 
+const chaptersPool = new Set()
+
 composer.action(/^cachemanga=(\S+):lang=(\S+)$/i, async ctx => {
   if (!ctx.from.id === process.env.ADMIN_ID) return ctx.answerCbQuery('No.')
   const lang = ctx.match[2]
@@ -160,7 +162,8 @@ async function uploadChapter (mangaId, lang, manga, id, ctx) {
     // cachePool.delete(`${mangaId}:${lang}`)
     ctx.telegram.sendMessage(
       ctx.callbackQuery.message.chat.id,
-      `Chapter ${chapter.chapter} caching error: ${e.message}`)
+      `Chapter ${chapter.chapter} caching error: ${e.message}`
+    )
   }
   if (telegraphLink) {
     await collection('chapters').create({
