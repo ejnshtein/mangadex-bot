@@ -5,11 +5,19 @@ const { mangaSearchView } = require('../generators')
 
 composer.hears(/\/search ([\S\s]+)/i, onlyPrivate, async ctx => {
   const query = ctx.match[1]
-  const { text, extra } = await mangaSearchView(query)
+  try {
+    var { text, extra } = await mangaSearchView(query)
+  } catch (e) {
+    return ctx.reply(`Error: ${e.message}`)
+  }
   ctx.reply(text, extra)
 })
 composer.command(['search', 'index'], onlyPrivate, async ctx => {
-  const { text, extra } = await mangaSearchView('')
+  try {
+    var { text, extra } = await mangaSearchView('')
+  } catch (e) {
+    return ctx.reply(`Error: ${e.message}`)
+  }
   ctx.reply(text, extra)
 })
 

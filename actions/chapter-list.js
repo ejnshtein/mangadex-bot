@@ -20,6 +20,7 @@ composer.action(/^chapterlist=(\S+):id=(\S+):offset=(\S+?):(\S+)$/i, async ctx =
 
   ctx.editMessageText(text, extra)
 })
+
 composer.action(/^list=(\S+?):chapterlist=(\S+):id=(\S+):offset=([0-9]+)/i, async ctx => {
   ctx.answerCbQuery('')
   const list = ctx.match[1]
