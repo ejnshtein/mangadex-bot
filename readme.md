@@ -16,7 +16,7 @@
 
 - Gets updates (RSS) for favorite manga in separate chat
 - Mangadex MDList sync (only in bot)
-- Some other stuff like query caching to boost speed and others...
+- Login to mangadex via bot to get direct access to MDlist, automatic reading tracking on MD, other...
 
 ## Commands
 
