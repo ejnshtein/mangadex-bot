@@ -5,6 +5,7 @@ const mangaSearchView = require('./manga-search-view')
 const readingListView = require('./reading-list-view')
 const chapterListView = require('./chapter-list-view')
 const favoriteListView = require('./favorite-list-view')
+const chapterView = require('./chapter-view')
 module.exports = {
   searchKeyboard,
   mangaView,
@@ -12,6 +13,7 @@ module.exports = {
   readingListView,
   chapterListView,
   favoriteListView,
+  chapterView,
   async searchMangaKeyboard (title, params = {}) {
     const searchParams = Object.assign({
       p: 1
