@@ -1,74 +1,80 @@
 const Composer = require('telegraf/composer')
 const composer = new Composer()
-const getFiles = require('../lib/cache-chapter')
+const {
+  updatingCount,
+  cachingCount,
+  getCacheBlockingValue,
+  getUpdateCachingBlockingValue,
+  setCachingBlocking,
+  setUpdateCachingBlocking
+} = require('../lib/chapter')
 const { templates } = require('../lib')
 
 composer.command('pool', async ctx => {
-  if (ctx.from.id === process.env.ADMIN_ID) {
-    ctx.reply(`Here's ${getFiles.cachePoolSize()} chapters waiting to be cached, updating: ${getFiles.updatePoolSize()}\nUpdated: ${templates.date()}`, {
+  if (ctx.from.id !== process.env.ADMIN_ID) { return }
+  ctx.reply(
+    `Here's ${cachingCount()} chapters waiting to be cached, updating: ${updatingCount()}
+Updated: ${templates.date()}`,
+    {
       reply_markup: {
         inline_keyboard: cacheKeyboard(
-          getFiles.getCacheBlockingValue(),
-          getFiles.getUpdateCachingBlockingValue()
+          getCacheBlockingValue(),
+          getUpdateCachingBlockingValue()
         )
       }
     })
-  }
 })
 
 composer.action('cachepoolrefresh', async ctx => {
-  if (ctx.from.id === process.env.ADMIN_ID) {
-    ctx.editMessageText(`Here's ${getFiles.cachePoolSize()} chapters waiting to be cached, updating: ${getFiles.updatePoolSize()}\nUpdated: ${templates.date()}`, {
-      reply_markup: {
-        inline_keyboard: cacheKeyboard(
-          getFiles.getCacheBlockingValue(),
-          getFiles.getUpdateCachingBlockingValue()
-        )
-      }
-    })
-  }
+  ctx.answerCbQuery('')
+  if (ctx.from.id !== process.env.ADMIN_ID) { return }
+  ctx.editMessageText(`Here's ${cachingCount()} chapters waiting to be cached, updating: ${updatingCount()}
+Updated: ${templates.date()}`, {
+    reply_markup: {
+      inline_keyboard: cacheKeyboard(
+        getCacheBlockingValue(),
+        getUpdateCachingBlockingValue()
+      )
+    }
+  })
 })
 
 composer.action(/^cachepool=(\S+)$/i, async ctx => {
-  if (ctx.from.id === process.env.ADMIN_ID) {
-    switch (ctx.match[1]) {
-      case 'on':
-        getFiles.setCachingBlocking(true)
-        break
-      case 'off':
-        getFiles.setCachingBlocking(false)
-        break
-    }
-    ctx.editMessageReplyMarkup({
-      inline_keyboard: cacheKeyboard(
-        getFiles.getCacheBlockingValue(),
-        getFiles.getUpdateCachingBlockingValue()
-      )
-    })
-  } else {
-    return ctx.editMessageReplyMarkup({ inline_keyboard: [] })
+  ctx.answerCbQuery('')
+  if (ctx.from.id !== process.env.ADMIN_ID) { return ctx.editMessageReplyMarkup({ inline_keyboard: [] }) }
+  switch (ctx.match[1]) {
+    case 'on':
+      setCachingBlocking(true)
+      break
+    case 'off':
+      setCachingBlocking(false)
+      break
   }
+  ctx.editMessageReplyMarkup({
+    inline_keyboard: cacheKeyboard(
+      getCacheBlockingValue(),
+      getUpdateCachingBlockingValue()
+    )
+  })
 })
 
 composer.action(/^updatecache=(\S+)$/i, async ctx => {
-  if (ctx.from.id === process.env.ADMIN_ID) {
-    switch (ctx.match[1]) {
-      case 'on':
-        getFiles.setUpdateCachingBlocking(true)
-        break
-      case 'off':
-        getFiles.setUpdateCachingBlocking(false)
-        break
-    }
-    ctx.editMessageReplyMarkup({
-      inline_keyboard: cacheKeyboard(
-        getFiles.getCacheBlockingValue(),
-        getFiles.getUpdateCachingBlockingValue()
-      )
-    })
-  } else {
-    return ctx.editMessageReplyMarkup({ inline_keyboard: [] })
+  ctx.answerCbQuery('')
+  if (ctx.from.id !== process.env.ADMIN_ID) { return ctx.editMessageReplyMarkup({ inline_keyboard: [] }) }
+  switch (ctx.match[1]) {
+    case 'on':
+      setUpdateCachingBlocking(true)
+      break
+    case 'off':
+      setUpdateCachingBlocking(false)
+      break
   }
+  ctx.editMessageReplyMarkup({
+    inline_keyboard: cacheKeyboard(
+      getCacheBlockingValue(),
+      getUpdateCachingBlockingValue()
+    )
+  })
 })
 
 module.exports = app => {
