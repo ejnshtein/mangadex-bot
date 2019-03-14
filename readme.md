@@ -11,6 +11,7 @@
 - Instant reading via Instant View technology
 - Favorite list
 - Reading list
+- Share manga and chapter outside telegram
 
 ## In progress
 
