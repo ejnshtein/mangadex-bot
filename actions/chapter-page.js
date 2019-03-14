@@ -169,7 +169,7 @@ composer.action([
   const copy = ctx.match[4] === 'true'
   const offset = ctx.match[5]
   const history = ctx.match[6]
-  let chapter = await mangadexClient.Chapter(chapterId)
+  let chapter = await mangadexClient.getChapter(chapterId)
   const { manga } = await mangadexClient.getManga(chapter.manga_id, false)
   let cachingChapter
   try {
