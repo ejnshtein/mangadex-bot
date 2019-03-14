@@ -1,6 +1,6 @@
 module.exports = app => {
   require('./manga')(app)
-  require('./cachemanga')(app)
+  require('./manga-cache')(app)
   require('./search')(app)
   require('./inline-query')(app)
   require('./chapter-page')(app)
@@ -11,4 +11,6 @@ module.exports = app => {
   require('./reading-list')(app)
   require('./favorite-title')(app)
   require('./favorite-list')(app)
+  // require('./manga-updates')(app)
+  require('./share')(app)
 }

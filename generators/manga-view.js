@@ -70,6 +70,10 @@ module.exports = async (mangaId, queryUrl = 'https://mangadex.org/search?title='
       {
         text: buttons.share,
         switch_inline_query: `manga:${mangaId}`
+      },
+      {
+        text: `Public link`,
+        callback_data: `sharemanga=${mangaId}`
       }
     ]
   )
