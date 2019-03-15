@@ -59,7 +59,7 @@ composer.action([
           callback_data: `chapter=${chapterId}:read=${ctx.match[2]}:copy=true:offset=${offset}:${history}`
         }
       ],
-      manga.links['mal'] ? [
+      manga.links && manga.links['mal'] ? [
         {
           text: 'Track reading on MAL',
           url: `https://myanimelist.net/manga/${manga.links['mal']}`
@@ -211,7 +211,7 @@ composer.action([
           callback_data: `${list ? `list=${list}:` : ''}chapter=${chapterId}:read=${ctx.match[3]}:copy=true:offset=${offset}${list ? '' : `:${history}`}`
         }
       ],
-      manga.links['mal'] ? [
+      manga.links && manga.links['mal'] ? [
         {
           text: 'Track reading on MAL',
           url: `https://myanimelist.net/manga/${manga.links['mal']}`

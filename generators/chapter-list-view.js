@@ -91,7 +91,7 @@ module.exports = async (mangaId, lang, user, message, offset = 0, history = 'p=1
               callback_data: `cachemanga=${mangaId}:lang=${lang}`
             } : undefined
           ].filter(Boolean),
-          manga.links['mal'] ? [
+          manga.links && manga.links['mal'] ? [
             {
               text: 'Track reading on MAL',
               url: `https://myanimelist.net/manga/${manga.links['mal']}`

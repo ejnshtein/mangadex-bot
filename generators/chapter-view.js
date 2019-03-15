@@ -46,7 +46,7 @@ module.exports = async (chapterId, offset = 0, history = 'p=1:o=0', list) => {
           callback_data: `${list ? `list=${list}:` : ''}manga=${chapter.manga_id}${list ? '' : `:${history}`}`
         }
       ],
-      manga.manga.links['mal'] ? [
+      manga.manga.links && manga.manga.links['mal'] ? [
         {
           text: 'Track reading on MAL',
           url: `https://myanimelist.net/manga/${manga.manga.links['mal']}`
