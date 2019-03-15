@@ -38,7 +38,7 @@ module.exports = async (mangaId, queryUrl = 'https://mangadex.org/search?title='
         keyboard.push([obj])
       }
     }
-    if (manga.links['mal']) {
+    if (manga.links && manga.links['mal']) {
       keyboard.unshift(
         [
           {
