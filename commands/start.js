@@ -10,7 +10,7 @@ composer.start(onlyPrivate, async ctx => {
     switch (true) {
       case /manga:[0-9]+/i.test(text):
         const mangaId = text.match(/manga:([0-9]+)/i)[1]
-        const favorited = ctx.state && ctx.state.user && ctx.state.user.favorite_titles && ctx.state.user.toObject().favorite_titles.some(el => el.manga_id === Number(ctx.match[1]))
+        const favorited = ctx.state && ctx.state.user && ctx.state.user.favorite_titles && ctx.state.user.toObject().favorite_titles.some(el => el.manga_id === Number(mangaId))
         const { text: mangaText, extra: mangaExtra } = await mangaView(mangaId, undefined, undefined, undefined, favorited)
         try {
           await ctx.reply(mangaText, mangaExtra)
