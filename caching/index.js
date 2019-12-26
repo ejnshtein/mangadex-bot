@@ -177,7 +177,7 @@ const publish = async (chapterId, type, options) => {
                 [
                   {
                     text: 'Manga info',
-                    url: `https://t.me/${bot.options.username}?start=${buffer.encode(`manga:${chapter.manga.id}`)}`
+                    url: `https://t.me/${bot.options.username}?start=${buffer.encode(`manga:${chapter.chapter.manga_id}`)}`
                   }
                 ]
               ]
