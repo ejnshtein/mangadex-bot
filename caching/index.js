@@ -162,7 +162,7 @@ const publish = async (chapterId, type, options) => {
       stopWorking(chapterId)
       try {
         await bot.telegram.sendMessage(
-          process.env.STORE_CHANNEL_ID,
+          process.env.CHANNEL_ID,
           messageText,
           {
             parse_mode: 'HTML',
