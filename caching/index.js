@@ -109,7 +109,7 @@ const publish = async (chapterId, type, options) => {
   const state = worker.getState()
   const chapter = state.chapters.find(el => el.id === chapterId)
   const users = state.users.filter(user => user.chapters.some(chapter => chapter.id === chapterId))
-  console.log(chapterId, type, options)
+  // console.log(chapterId, type, options)
   // console.log(state, chapter, users)
   let messageText
   let messageOptions
