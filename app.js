@@ -1,7 +1,5 @@
-require('./env')
-const { bot } = require('./core/bot')
-require('./commands')(bot)
-require('./actions')(bot)
-// require('./core/feed')(bot)
+import './env.js'
+import './actions/index.js'
+import './commands/index.js'
 
 console.log('bot started')

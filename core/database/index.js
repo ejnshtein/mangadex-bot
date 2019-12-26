@@ -1,10 +1,12 @@
-const mongoose = require('mongoose')
-const {
-  Schema
-} = mongoose
+import mongoose from 'mongoose'
 
-const connection = mongoose.createConnection(process.env.DATABASE_URL, {
-  useNewUrlParser: true
+const { createConnection, Schema } = mongoose
+
+const connection = createConnection(process.env.DATABASE_URL, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  useCreateIndex: true,
+  useFindAndModify: true
 })
 
 connection.then(() => {
@@ -38,6 +40,11 @@ const collections = [
       last_update: {
         type: Date,
         default: () => Date.now()
+      },
+      manga_updates: {
+        type: [Number],
+        default: [],
+        required: false
       },
       favorite_titles: {
         type: [
@@ -90,6 +97,14 @@ const collections = [
         ],
         required: true,
         default: []
+      },
+      mangadex_session: {
+        type: String,
+        required: false
+      },
+      mangadex_remember_token: {
+        type: String,
+        required: false
       }
     }, {
       timestamps: {
@@ -123,7 +138,7 @@ const collections = [
       },
       telegraph: {
         type: String,
-        required: true
+        required: false
       },
       manga_id: {
         type: Number,
@@ -133,12 +148,58 @@ const collections = [
         type: String,
         required: false
       },
-      timestamp: Number
+      timestamp: {
+        type: Number,
+        required: false
+      },
+      status: {
+        type: String,
+        required: false
+      }
     }, {
       timestamps: {
         updatedAt: 'updated_at',
         createdAt: 'created_at'
       }
+    })
+  },
+  {
+    name: 'manga',
+    schema: new Schema({
+      id: {
+        type: Number,
+        required: true
+      },
+      cover_url: String,
+      last_chapter_id: {
+        type: Number,
+        required: true
+      },
+      lang_name: String,
+      lang_flag: String,
+      status: Number,
+      genres: [Number],
+      title: String,
+      artist: String,
+      author: String,
+      description: String,
+      watching_updates: {
+        type: [Number],
+        required: true,
+        default: []
+      }
+    }, {
+      timestamps: {
+        createdAt: 'created_at',
+        updatedAt: 'updated_at'
+      }
+    })
+  },
+  {
+    name: 'settings',
+    schema: new Schema({
+      key: String,
+      value: Schema.Types.Mixed
     })
   }
 ]
@@ -160,7 +221,7 @@ collections.reverse().forEach(collection => {
   connection.model(collection.name, collection.schema)
 })
 
-module.exports = collectionName => {
+export default collectionName => {
   const collection = collections.find(el => el.name === collectionName)
   if (collection) {
     return connection.model(collection.name, collection.schema)

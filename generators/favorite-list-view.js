@@ -1,8 +1,7 @@
-const collection = require('../core/database')
-const { getLangName } = require('mangadex-api').default
-const { buttons, templates } = require('../lib')
+import collection from '../core/database/index.js'
+import { buttons, templates } from '../lib/index.js'
 
-module.exports = async (userId, offset = 0) => {
+export default async (userId, offset = 0) => {
   try {
     var user = await collection('users').aggregate(
       [
@@ -23,7 +22,7 @@ module.exports = async (userId, offset = 0) => {
     ).exec().then(users => users[0])
   } catch (e) {
     return {
-      text: `Oops, something went wrong...`,
+      text: templates.error(e),
       extra: {
         parse_mode: 'HTML'
       }
@@ -85,7 +84,7 @@ module.exports = async (userId, offset = 0) => {
     }
   } else {
     return {
-      text: `Oops, something went wrong...`,
+      text: 'Oops, something went wrong...',
       extra: {
         parse_mode: 'HTML'
       }

@@ -1,4 +1,7 @@
-module.exports = {
-  onlyPrivate: require('./only-private'),
-  fromAdmin: require('./from-admin')
+import onlyPrivate from './only-private.js'
+import fromAdmin from './from-admin.js'
+
+export {
+  onlyPrivate,
+  fromAdmin
 }

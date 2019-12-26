@@ -1,4 +1,7 @@
-const Composer = require('telegraf/composer')
+import Telegraf from 'telegraf'
+import { templates } from '../lib/index.js'
+import { bot } from '../core/bot.js'
+const { Composer } = Telegraf
 const composer = new Composer()
 
 composer.action(/favorite:([0-9]+)/i, async ctx => {
@@ -6,9 +9,7 @@ composer.action(/favorite:([0-9]+)/i, async ctx => {
   ctx.answerCbQuery(result)
 })
 
-module.exports = app => {
-  app.use(composer.middleware())
-}
+bot.use(composer.middleware())
 
 async function favorite (user, mangaId) {
   mangaId = typeof mangaId !== 'number' ? Number.parseInt(mangaId) : mangaId
@@ -18,7 +19,7 @@ async function favorite (user, mangaId) {
       try {
         await manga.remove()
       } catch (e) {
-        return 'Something went wrong...'
+        return templates.error(e)
       }
       user.markModified('favorite_titles')
       await user.save()

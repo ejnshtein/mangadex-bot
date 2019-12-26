@@ -1,12 +1,12 @@
-const Composer = require('telegraf/composer')
+import Telegraf from 'telegraf'
+import { bot } from '../core/bot.js'
+const { Composer } = Telegraf
 const composer = new Composer()
 
 composer.command('getid', ({ from, chat, reply }) =>
-  reply(`Your id: <code>${from && from.id ? from.id : 'not available'}</code>\nChat id: <code>${chat.id}</code>`, {
+  reply(`Your id: <code>${from.id}</code>\nChat id: <code>${chat.id}</code>`, {
     parse_mode: 'HTML'
   })
 )
 
-module.exports = bot => {
-  bot.use(composer.middleware())
-}
+bot.use(composer.middleware())

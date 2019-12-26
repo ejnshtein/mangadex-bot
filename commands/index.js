@@ -1,10 +1,7 @@
-module.exports = app => {
-  require('./start')(app)
-  require('./search')(app)
-  require('./get-cache-pool')(app)
-  require('./link-detector')(app)
-  require('./notes')(app)
-  require('./reading-list')(app)
-  require('./favorite-list')(app)
-  require('./getid')(app)
-}
+import './start.js'
+import './search.js'
+import './link-detector.js'
+import './notes.js'
+import './reading-list.js'
+import './favorite-list.js'
+import './getid.js'

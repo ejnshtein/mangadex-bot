@@ -1,14 +1,14 @@
-const Mangadex = require('mangadex-api').default
-const { templates, getList } = require('../lib')
-const collection = require('../core/database')
+import Mangadex from 'mangadex-api'
+import { templates, getList } from '../lib/index.js'
+import collection from '../core/database/index.js'
 
 const client = new Mangadex({
   shareChapterCache: true,
   shareMangaCache: true
 })
 
-module.exports = async (chapterId, offset = 0, history = 'p=1:o=0', list) => {
-  let chapter = await client.getChapter(chapterId)
+export default async (chapterId, offset = 0, history = 'p=1:o=0', list) => {
+  const chapter = await client.getChapter(chapterId)
   const manga = await client.getManga(chapter.manga_id, false)
   // console.log(chapter)
   try {
@@ -17,7 +17,7 @@ module.exports = async (chapterId, offset = 0, history = 'p=1:o=0', list) => {
     return {
       chapter,
       manga,
-      text: `Oops, something went wrong...`,
+      text: 'Oops, something went wrong...',
       extra: {
         parse_mode: 'HTML'
       }
@@ -46,14 +46,21 @@ module.exports = async (chapterId, offset = 0, history = 'p=1:o=0', list) => {
           callback_data: `${list ? `list=${list}:` : ''}manga=${chapter.manga_id}${list ? '' : `:${history}`}`
         }
       ],
-      manga.manga.links && manga.manga.links['mal'] ? [
+      manga.manga.links && manga.manga.links.mal ? [
         {
           text: 'Track reading on MAL',
-          url: `https://myanimelist.net/manga/${manga.manga.links['mal']}`
+          url: `https://myanimelist.net/manga/${manga.manga.links.mal}`
         }
       ] : undefined
     ].filter(Boolean)
-    const messageText = templates.manga.chapter(chapter, manga, undefined, list ? `<b>List:</b> ${getList(list.match(/([a-z]+)/i)[1])}` : '')
+    const messageText = templates.manga.chapter(
+      chapter,
+      manga,
+      undefined,
+      list
+        ? `<b>List:</b> ${getList(list.match(/([a-z]+)/i)[1])}`
+        : ''
+    )
     return {
       chapter,
       manga,

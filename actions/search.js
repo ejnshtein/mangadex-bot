@@ -1,7 +1,9 @@
-const Composer = require('telegraf/composer')
+import Telegraf from 'telegraf'
+import { mangaSearchView } from '../generators/index.js'
+import { loadSearchParams, templates } from '../lib/index.js'
+import { bot } from '../core/bot.js'
+const { Composer } = Telegraf
 const composer = new Composer()
-const { mangaSearchView } = require('../generators')
-const { loadSearchParams } = require('../lib')
 
 composer.action(/^p=(\S+):o=(\S+)$/i, async ctx => {
   const page = Number.parseInt(ctx.match[1])
@@ -12,12 +14,10 @@ composer.action(/^p=(\S+):o=(\S+)$/i, async ctx => {
   try {
     var { text, extra } = await mangaSearchView(searchValue, page, offset)
   } catch (e) {
-    return ctx.answerCbQuery(e.message)
+    return ctx.answerCbQuery(templates.error(e), true)
   }
   ctx.answerCbQuery('')
   ctx.editMessageText(text, extra)
 })
 
-module.exports = app => {
-  app.use(composer.middleware())
-}
+bot.use(composer.middleware())

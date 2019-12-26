@@ -1,7 +1,8 @@
-const { search } = require('mangadex-api').default
-const { AllHtmlEntities } = require('html-entities')
+import Mangadex from 'mangadex-api'
+import HtmlEntities from 'html-entities'
+const { AllHtmlEntities } = HtmlEntities
 const { decode } = new AllHtmlEntities()
-module.exports = (params) => search(params)
+export default (params) => Mangadex.search(params)
   .then(response => {
     params = Object.assign({
       history: 'p=1:o=0'

@@ -1,8 +1,10 @@
-const Composer = require('telegraf/composer')
+import Telegraf from 'telegraf'
+import { buffer, templates } from '../lib/index.js'
+import { mangaView, mangaSearchView, chapterView } from '../generators/index.js'
+import { onlyPrivate } from '../middlewares/index.js'
+import { bot } from '../core/bot.js'
+const { Composer } = Telegraf
 const composer = new Composer()
-const { buffer } = require('../lib')
-const { mangaView, mangaSearchView, chapterView } = require('../generators')
-const { onlyPrivate } = require('../middlewares')
 
 composer.start(onlyPrivate, async ctx => {
   if (ctx.startPayload) {
@@ -42,19 +44,17 @@ Here's basic commands: /search, /index, /notes .
 
 *Telegra.ph + Instant View`, {
       parse_mode: 'HTML',
-      reply_markup: {
-        inline_keyboard: [
-          [
-            {
-              text: `Let's find some manga!`,
-              switch_inline_query_current_chat: ''
-            }
-          ]
-        ]
-      }
+      // reply_markup: {
+      //   inline_keyboard: [
+      //     [
+      //       {
+      //         text: 'Let's find some manga!'',
+      //         switch_inline_query_current_chat: ''
+      //       }
+      //     ]
+      //   ]
+      // }
     })
 })
 
-module.exports = app => {
-  app.use(composer.middleware())
-}
+bot.use(composer.middleware())

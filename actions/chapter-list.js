@@ -1,9 +1,11 @@
-const Composer = require('telegraf/composer')
+import Telegraf from 'telegraf'
+import { chapterListView } from '../generators/index.js'
+import { templates } from '../lib/index.js'
+import { bot } from '../core/bot.js'
+const { Composer } = Telegraf
 const composer = new Composer()
-const { chapterListView } = require('../generators')
 
 composer.action(/^chapterlist=(\S+):id=(\S+):offset=(\S+?):(\S+)$/i, async ctx => {
-  ctx.answerCbQuery('')
   const lang = ctx.match[1]
   const mangaId = ctx.match[2]
   const offset = Number.parseInt(ctx.match[3])
@@ -15,14 +17,14 @@ composer.action(/^chapterlist=(\S+):id=(\S+):offset=(\S+?):(\S+)$/i, async ctx =
     var { text, extra } = await chapterListView(mangaId, lang, user, ctx.callbackQuery.message, offset, history)
   } catch (e) {
     console.log(e)
-    return ctx.answerCbQuery('Something went wrong...')
+    return ctx.answerCbQuery(templates.error(e), true)
   }
 
+  ctx.answerCbQuery('')
   ctx.editMessageText(text, extra)
 })
 
 composer.action(/^list=(\S+?):chapterlist=(\S+):id=(\S+):offset=([0-9]+)/i, async ctx => {
-  ctx.answerCbQuery('')
   const list = ctx.match[1]
   const lang = ctx.match[2]
   const mangaId = ctx.match[3]
@@ -34,13 +36,12 @@ composer.action(/^list=(\S+?):chapterlist=(\S+):id=(\S+):offset=([0-9]+)/i, asyn
     var { text, extra } = await chapterListView(mangaId, lang, user, ctx.callbackQuery.message, offset, undefined, list)
   } catch (e) {
     console.log(e)
-    return ctx.answerCbQuery('Something went wrong...')
+    return ctx.answerCbQuery(templates.error(e), true)
   }
+  ctx.answerCbQuery('')
 
   // console.log(extra.reply_markup.inline_keyboard)
   ctx.editMessageText(text, extra)
 })
 
-module.exports = app => {
-  app.use(composer.middleware())
-}
+bot.use(composer.middleware())

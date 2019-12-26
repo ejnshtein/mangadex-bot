@@ -1,7 +1,10 @@
-const Composer = require('telegraf/composer')
+import Telegraf from 'telegraf'
+import { onlyPrivate } from '../middlewares/index.js'
+import { readingListView } from '../generators/index.js'
+import { templates } from '../lib/index.js'
+import { bot } from '../core/bot.js'
+const { Composer } = Telegraf
 const composer = new Composer()
-const { onlyPrivate } = require('../middlewares')
-const { readingListView } = require('../generators')
 
 composer.command('reading',
   onlyPrivate,
@@ -10,12 +13,10 @@ composer.command('reading',
       var { text, extra } = await readingListView(ctx.from.id)
     } catch (e) {
       console.log(e)
-      return ctx.reply('Something went wrong...')
+      return ctx.reply(templates.error(e))
     }
     return ctx.reply(text, extra)
   }
 )
 
-module.exports = app => {
-  app.use(composer.middleware())
-}
+bot.use(composer.middleware())

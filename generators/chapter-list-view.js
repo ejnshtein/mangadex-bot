@@ -1,11 +1,11 @@
-const Mangadex = require('mangadex-api').default
+import Mangadex from 'mangadex-api'
+import { buttons, templates, getUrlInMessage, getGroupName, getList } from '../lib/index.js'
+import collection from '../core/database/index.js'
 const client = new Mangadex({
   shareMangaCache: true
 })
-const { buttons, templates, getUrlInMessage, getGroupName, getList } = require('../lib')
-const collection = require('../core/database')
 
-module.exports = async (mangaId, lang, user, message, offset = 0, history = 'p=1:o=0', list) => {
+export default async (mangaId, lang, user, message, offset = 0, history = 'p=1:o=0', list) => {
   // const { user } = ctx.state
 
   const alreadyRead = user.already_read && user.already_read.map(el => el.chapter_id)
@@ -91,10 +91,10 @@ module.exports = async (mangaId, lang, user, message, offset = 0, history = 'p=1
               callback_data: `cachemanga=${mangaId}:lang=${lang}`
             } : undefined
           ].filter(Boolean),
-          manga.links && manga.links['mal'] ? [
+          manga.links && manga.links.mal ? [
             {
               text: 'Track reading on MAL',
-              url: `https://myanimelist.net/manga/${manga.links['mal']}`
+              url: `https://myanimelist.net/manga/${manga.links.mal}`
             }
           ] : undefined,
           navigation

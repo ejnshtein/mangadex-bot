@@ -1,11 +1,14 @@
-const Composer = require('telegraf/composer')
+import Telegraf from 'telegraf'
+import Mangadex from 'mangadex-api'
+import { buffer, templates } from '../lib/index.js'
+import HtmlEntities from 'html-entities'
+import { chapterView } from '../generators/index.js'
+import { bot } from '../core/bot.js'
+const { Composer } = Telegraf
 const composer = new Composer()
-const Mangadex = require('mangadex-api').default
 const client = new Mangadex({ shareMangaCache: true })
-const { buffer, templates } = require('../lib')
-const { AllHtmlEntities } = require('html-entities')
+const { AllHtmlEntities } = HtmlEntities
 const { decode } = new AllHtmlEntities()
-const { chapterView } = require('../generators')
 
 composer.inlineQuery(/^manga:([0-9]+)$/i, async ({ match, me, inlineQuery, answerInlineQuery }) => {
   if (inlineQuery.offset && inlineQuery.offset === '1') { return answerInlineQuery([], queryOptions()) }
@@ -116,8 +119,8 @@ composer.on('inline_query', async ctx => {
     return ctx.answerInlineQuery(sendError(e), queryOptions())
   }
   // console.log(searchResult.titles.length)
-  const result = searchResult.titles.map(title =>
-    ({
+  const result = searchResult.titles.map(
+    title => ({
       type: 'article',
       id: title.id.toString(),
       title: decode(title.title),
@@ -158,20 +161,17 @@ composer.on('inline_query', async ctx => {
 //   ctx.answerCbQuery('Hello there!')
 // })
 
-module.exports = app => {
-  app.use(composer.middleware())
-}
+bot.use(composer.middleware())
 
 function sendError (error) {
-  console.log(error)
   return [
     {
       type: 'article',
       id: '1',
-      title: 'Error!',
+      title: templates.error(error),
       description: 'Something went wrong. Try again later, or change request query.',
       input_message_content: {
-        message_text: `Error!\n\nSomething went wrong. Try again later, or change request query.`
+        message_text: templates.error(error)
       }
     }
   ]

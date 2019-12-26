@@ -1,6 +1,7 @@
-const collection = require('./')
+import collection from './index.js'
 const users = collection('users')
-module.exports = () => async ({ updateType, chat, from, state }, next) => {
+
+export default () => async ({ updateType, chat, from, state }, next) => {
   if (updateType === 'callback_query'
     || updateType === 'message' && chat.type === 'private') {
     const user = await users.findOne({ id: from.id }).exec()

@@ -1,10 +1,11 @@
-const { search } = require('mangadex-api').default
-const { buttons, templates } = require('../lib')
-const { AllHtmlEntities } = require('html-entities')
+import Mangadex from 'mangadex-api'
+import { buttons, templates } from '../lib/index.js'
+import HtmlEntities from 'html-entities'
+const { AllHtmlEntities } = HtmlEntities
 const { decode } = new AllHtmlEntities()
 
-module.exports = async (query = '', page = 1, offset = 0) => {
-  const searchResult = await search(query, 'title', {
+export default async (query = '', page = 1, offset = 0) => {
+  const searchResult = await Mangadex.search(query, 'title', {
     params: {
       p: page
     }

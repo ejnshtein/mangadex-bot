@@ -1,10 +1,12 @@
-const Composer = require('telegraf/composer')
+import Telegraf from 'telegraf'
+import { onlyPrivate } from '../middlewares/index.js'
+import { mangaView } from '../generators/index.js'
+import Mangadex from 'mangadex-api'
+import { templates, buffer } from '../lib/index.js'
+import { bot } from '../core/bot.js'
+const { Composer } = Telegraf
 const composer = new Composer()
-const { onlyPrivate } = require('../middlewares')
-const { mangaView } = require('../generators')
-const Mangadex = require('mangadex-api').default
 const client = new Mangadex({ shareMangaCache: true })
-const { templates, buffer } = require('../lib')
 
 composer.url(/mangadex\.org\/title\/([0-9]+)/i,
   Composer.branch(onlyPrivate,
@@ -14,15 +16,14 @@ composer.url(/mangadex\.org\/title\/([0-9]+)/i,
       try {
         var { extra, text } = await mangaView(ctx.match[1], undefined, undefined, undefined, favorited)
       } catch (e) {
-        return ctx.reply(`Something went wrong...\n\n${e.message}`)
+        return ctx.reply(templates.error(e))
       }
       return ctx.reply(text, extra)
     }, async ctx => {
       try {
         var { manga } = await client.getManga(ctx.match[1])
       } catch (e) {
-        // console.log(e)
-        return
+        return ctx.reply(templates.error(e))
       }
       return ctx.reply(templates.manga.viewPublic(ctx.match[1], manga), {
         parse_mode: 'HTML',
@@ -40,19 +41,4 @@ composer.url(/mangadex\.org\/title\/([0-9]+)/i,
     })
 )
 
-// composer.url(/mangadex\.org\/chapter\/([0-9]+)/i, async ctx => {
-// })
-
-// composer.hears(/\/search ([\S\s]+)/i, onlyPrivate, async ctx => {
-//   const query = ctx.match[1]
-//   const { text, extra } = await mangaSearchView(query)
-//   ctx.reply(text, extra)
-// })
-// composer.command(['search', 'index'], onlyPrivate, async ctx => {
-//   const { text, extra } = await mangaSearchView('')
-//   ctx.reply(text, extra)
-// })
-
-module.exports = app => {
-  app.use(composer.middleware())
-}
+bot.use(composer.middleware())

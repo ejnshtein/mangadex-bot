@@ -1,6 +1,8 @@
-const Composer = require('telegraf/composer')
+import Telegraf from 'telegraf'
+import { onlyPrivate } from '../middlewares/index.js'
+import { bot } from '../core/bot.js'
+const { Composer } = Telegraf
 const composer = new Composer()
-const { onlyPrivate } = require('../middlewares')
 
 composer.command('notes',
   onlyPrivate,
@@ -13,6 +15,4 @@ _This message can be changed._`, {
     })
 )
 
-module.exports = app => {
-  app.use(composer.middleware())
-}
+bot.use(composer.middleware())

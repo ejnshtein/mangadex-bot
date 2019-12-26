@@ -1,17 +1,12 @@
-const Mangadex = require('mangadex-api').default
+import Mangadex from 'mangadex-api'
+import { templates, groupBy, loadLangCode, buttons, getList } from '../lib/index.js'
+import collection from '../core/database/index.js'
 const client = new Mangadex({ shareMangaCache: true })
-const { templates, groupBy, loadLangCode, buttons, getList } = require('../lib')
-const collection = require('../core/database')
 
-module.exports = async (mangaId, queryUrl = 'https://mangadex.org/search?title=', history = 'p=1:o=0', list, favorite = false) => {
+export default async (mangaId, queryUrl = 'https://mangadex.org/search?title=', history = 'p=1:o=0', list, favorite = false) => {
   const { manga, chapter } = await client.getManga(mangaId)
   const withChapters = Boolean(chapter)
 
-  // checkManga(
-  //   typeof mangaId === 'string' ? Number.parseInt(mangaId) : mangaId,
-  //   manga,
-  //   chapter
-  // )
   const cachedChapters = await collection('chapters').find({ id: { $in: chapter.map(({ id }) => id) } }, 'id').exec()
   const keyboard = [
     []
@@ -29,7 +24,7 @@ module.exports = async (mangaId, queryUrl = 'https://mangadex.org/search?title='
         }, [])
         .filter(el => cachedChapters.some(ch => ch.toObject().id === el.id)).length
       const obj = {
-        text: `${cachedChaptersLength === chapters[code].length ? `⬇` : cachedChaptersLength ? `↻ (${cachedChaptersLength}/${chapters[code].length})` : ''} Read in ${loadLangCode(code)}`,
+        text: `${cachedChaptersLength === chapters[code].length ? '⬇' : cachedChaptersLength ? `↻ (${cachedChaptersLength}/${chapters[code].length})` : ''} Read in ${loadLangCode(code)}`,
         callback_data: `${list ? `list=${list}:` : ''}chapterlist=${code}:id=${mangaId}:offset=0${list ? '' : `:${history}`}`
       }
       if (keyboard[keyboard.length - 1].length < 2) {
@@ -38,12 +33,12 @@ module.exports = async (mangaId, queryUrl = 'https://mangadex.org/search?title='
         keyboard.push([obj])
       }
     }
-    if (manga.links && manga.links['mal']) {
+    if (manga.links && manga.links.mal) {
       keyboard.unshift(
         [
           {
             text: 'Track reading on MAL',
-            url: `https://myanimelist.net/manga/${manga.links['mal']}`
+            url: `https://myanimelist.net/manga/${manga.links.mal}`
           }
         ]
       )
@@ -72,7 +67,7 @@ module.exports = async (mangaId, queryUrl = 'https://mangadex.org/search?title='
         switch_inline_query: `manga:${mangaId}`
       },
       {
-        text: `Public link`,
+        text: 'Public link',
         callback_data: `sharemanga=${mangaId}`
       }
     ]
@@ -96,44 +91,3 @@ module.exports = async (mangaId, queryUrl = 'https://mangadex.org/search?title='
     }
   }
 }
- /*
-async function checkManga (mangaId, manga, chapters) {
-  const mangaData = await collection('manga').findOne({ id: mangaId }).exec()
-
-  if (mangaData) {
-    if (mangaData.updated_at - Date.now() > 1000 * 60 * 60 * 24 * 7) {
-      let edited = false
-      if (mangaData.cover_url !== manga.cover_url) {
-        mangaData.cover_url = manga.cover_url
-        mangaData.markModified('cover_url')
-        edited = true
-      }
-      if (mangaData.status !== manga.status) {
-        mangaData.status = manga.status
-        mangaData.markModified('status')
-        edited = true
-      }
-      if (mangaData.toObject().genres.filter(el => !manga.genres.includes(el)).length) {
-        mangaData.genres = manga.genres
-        mangaData.markModified('genres')
-        edited = true
-      }
-      if (mangaData.description !== manga.description) {
-        mangaData.description = manga.description
-        mangaData.markModified('description')
-        edited = true
-      }
-      if (edited) {
-        return mangaData.save()
-      }
-    }
-    return undefined
-  } else {
-    collection('manga').create({
-      id: mangaId,
-      cover_url: manga.cover_url,
-      last_chapter_id: chapters.reduce((acc, val, arr) => )
-    })
-  }
-}
-*/

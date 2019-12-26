@@ -1,15 +1,17 @@
-const Composer = require('telegraf/composer')
+import Telegraf from 'telegraf'
+import Mangadex from 'mangadex-api'
+import { buffer, templates } from '../lib/index.js'
+import { bot } from '../core/bot.js'
+const { Composer } = Telegraf
 const composer = new Composer()
-const Mangadex = require('mangadex-api').default
 const mangadexClient = new Mangadex({ shareMangaCache: true, shareChapterCache: true })
-const { buffer, templates } = require('../lib')
 
 composer.action(/^sharemanga=(\S+)$/i, async ctx => {
   let manga
   try {
     manga = await mangadexClient.getManga(ctx.match[1])
   } catch (e) {
-    return ctx.answerCbQuery(e.message)
+    return ctx.answerCbQuery(templates.error(e), true)
   }
   ctx.answerCbQuery('')
   ctx.reply(
@@ -24,7 +26,7 @@ composer.action(/^sharechapter=(\S+)$/i, async ctx => {
   try {
     chapter = await mangadexClient.getChapter(ctx.match[1])
   } catch (e) {
-    return ctx.answerCbQuery(e.message)
+    return ctx.answerCbQuery(templates.error(e), true)
   }
   ctx.answerCbQuery('')
   ctx.reply(
@@ -34,6 +36,4 @@ composer.action(/^sharechapter=(\S+)$/i, async ctx => {
   )
 })
 
-module.exports = app => {
-  app.use(composer.middleware())
-}
+bot.use(composer.middleware())

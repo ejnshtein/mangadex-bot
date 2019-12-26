@@ -1,19 +1,19 @@
-const Composer = require('telegraf/composer')
+import Telegraf from 'telegraf'
+import { readingListView } from '../generators/index.js'
+import { templates } from '../lib/index.js'
+import { bot } from '../core/bot.js'
+const { Composer } = Telegraf
 const composer = new Composer()
 // const { onlyPrivate } = require('../middlewares')
-const { readingListView } = require('../generators')
 
 composer.action(/^list=read-([0-9]+)$/i, async ctx => {
   try {
     var { text, extra } = await readingListView(ctx.from.id, Number(ctx.match[1]))
   } catch (e) {
-    console.log(e)
-    return ctx.answerCbQuery('Something went wrong...')
+    return ctx.answerCbQuery(templates.error(e), true)
   }
   ctx.answerCbQuery('')
   return ctx.editMessageText(text, extra)
 })
 
-module.exports = app => {
-  app.use(composer.middleware())
-}
+bot.use(composer.middleware())

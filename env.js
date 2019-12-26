@@ -1,5 +1,5 @@
-const dotenv = require('dotenv')
-const dotenvParseVariables = require('dotenv-parse-variables')
+import dotenv from 'dotenv'
+import dotenvParseVariables from 'dotenv-parse-variables'
 const env = dotenv.config({
   path: './.env'
 })
