@@ -155,6 +155,12 @@ const publish = async (chapterId, type, options) => {
                 text: 'Ok',
                 callback_data: 'delete'
               }
+            ],
+            [
+              {
+                text: 'Load chapter',
+                callback_data: `chapter=${chapterId}:read=0:copy=0:offset=0:p=1:o=0`
+              }
             ]
           ]
         }
