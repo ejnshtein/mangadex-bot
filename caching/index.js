@@ -94,15 +94,15 @@ worker.on(addToQueue, (state, { id, pages, chapter, manga, from, ctx }) => {
 addToQueue.watch((payload) => {
   const state = worker.getState()
 
-  console.log(state.chapters.length)
+  // console.log(state.chapters.length)
   if (!state.working) {
     startWorking()
   }
 })
 
-worker.watch(state => {
-  console.log('state', state)
-})
+// worker.watch(state => {
+//   console.log('state', state)
+// })
 
 const publish = async (chapterId, type, options) => {
   // publish to tg
