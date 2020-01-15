@@ -1,5 +1,5 @@
 // require('dotenv').config({ path: '../.env' })
-import Telegraf from 'telegraf'
+import Telegraf from 'telegraf-esm'
 import collection from './database/index.js'
 import logger from './database/logger.js'
 export const bot = new Telegraf(process.env.BOT_TOKEN)

@@ -1,4 +1,4 @@
-import Telegraf from 'telegraf'
+import Telegraf from 'telegraf-esm'
 import Mangadex from 'mangadex-api'
 import { templates, setCurrentlyReading } from '../lib/index.js'
 import { addToQueue } from '../caching/index.js'
@@ -6,7 +6,10 @@ import { bot } from '../core/bot.js'
 import collection from '../core/database/index.js'
 const { Composer } = Telegraf
 const composer = new Composer()
-const mangadexClient = new Mangadex({ shareMangaCache: true, shareChapterCache: true })
+const mangadexClient = new Mangadex({
+  shareMangaCache: true,
+  shareChapterCache: true
+})
 
 composer.action(
   /^chapter=(\S+):read=(\S+):copy=(\S+):offset=(\S+?):(\S+)$/i,

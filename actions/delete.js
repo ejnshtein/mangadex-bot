@@ -1,4 +1,4 @@
-import Telegraf from 'telegraf'
+import Telegraf from 'telegraf-esm'
 import { bot } from '../core/bot.js'
 const { Composer } = Telegraf
 const composer = new Composer()

@@ -2,7 +2,7 @@ import { onlyPrivate } from '../middlewares/index.js'
 import { favoriteListView } from '../generators/index.js'
 import { templates } from '../lib/index.js'
 import { bot } from '../core/bot.js'
-import Telegraf from 'telegraf'
+import Telegraf from 'telegraf-esm'
 const { Composer } = Telegraf
 const composer = new Composer()
 

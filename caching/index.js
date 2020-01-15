@@ -84,6 +84,14 @@ worker.on(addToQueue, (state, { id, pages, chapter, manga, from, ctx }) => {
   return state
 })
 
+export const removeChapter = createEvent('remove chapter from queue')
+
+worker.on(removeChapter, (state, chapterId) => {
+  state.chapters = state.chapters.filter(el => el.id !== chapterId)
+
+  return state
+})
+
 // export const addToQueueBatch = createEvent('add to queue batch')
 
 // worker.on(addToQueueBatch, (state, { chapters, ctx }) => {
@@ -128,6 +136,7 @@ const publish = async (chapterId, type, options) => {
       break
     case 'error':
       messageText = templates.error(options.data)
+      removeChapter(chapterId)
       break
     case 'done':
       try {

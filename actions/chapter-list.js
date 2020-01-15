@@ -1,8 +1,7 @@
-import Telegraf from 'telegraf'
+import { Composer } from 'telegraf-esm'
 import { chapterListView } from '../generators/index.js'
 import { templates } from '../lib/index.js'
 import { bot } from '../core/bot.js'
-const { Composer } = Telegraf
 const composer = new Composer()
 
 composer.action(/^chapterlist=(\S+):id=(\S+):offset=(\S+?):(\S+)$/i, async ctx => {

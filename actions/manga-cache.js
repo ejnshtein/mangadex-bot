@@ -1,4 +1,4 @@
-import Telegraf from 'telegraf'
+import Telegraf from 'telegraf-esm'
 import Mangadex from 'mangadex-api'
 import { templates } from '../lib/index.js'
 import collection from '../core/database/index.js'

@@ -1,4 +1,4 @@
-import Telegraf from 'telegraf'
+import Telegraf from 'telegraf-esm'
 import { mangaSearchView } from '../generators/index.js'
 import { loadSearchParams, templates } from '../lib/index.js'
 import { bot } from '../core/bot.js'

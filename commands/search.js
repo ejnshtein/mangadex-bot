@@ -1,4 +1,4 @@
-import Telegraf from 'telegraf'
+import Telegraf from 'telegraf-esm'
 import { onlyPrivate } from '../middlewares/index.js'
 import { mangaSearchView } from '../generators/index.js'
 import { templates } from '../lib/index.js'
