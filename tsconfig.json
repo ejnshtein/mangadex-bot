@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "allowJs": true,
+    "module": "CommonJS",
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "ES5",
+    "sourceMap": true,
+    "moduleResolution": "Node",
+    "outDir": "dist",
+    "baseUrl": ".",
+    "skipLibCheck": true,
+    "paths": {
+      "*": ["node_modules/*"],
+      "@mangadex/*": ["src/mangadex/*"],
+      "@lib/*": ["src/lib/*"],
+      "@actions/*": ["src/actions/*"],
+      "@type/*": ["src/types/*"],
+      "@src/*": ["src/*"]
+    }
+  },
+  "include": [
+    "src/**/*"
+  ]
+}

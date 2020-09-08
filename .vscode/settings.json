@@ -1,0 +1,13 @@
+{
+    "cSpell.words": [
+        "hentai",
+        "mangadex",
+        "telegraf",
+        "typegoose",
+        "virtuals"
+    ],
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": true
+    },
+    "editor.tabSize": 2
+}

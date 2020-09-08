@@ -1,7 +1,0 @@
-import './start.js'
-import './search.js'
-import './link-detector.js'
-import './notes.js'
-import './reading-list.js'
-import './favorite-list.js'
-import './getid.js'

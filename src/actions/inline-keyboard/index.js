@@ -1,0 +1,8 @@
+import './chapter-list.js'
+import './chapter.js'
+import './delete.js'
+import './favorite-list.js'
+import './favorite-title.js'
+import './manga.js'
+import './mark-as-read.js'
+import './reading-list.js'
