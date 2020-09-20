@@ -1,86 +1,138 @@
-import { MangaModel, MangaKeys, MangaData } from '@src/models/Manga'
+import { MangaModel, MangaKeys } from '@src/models/Manga'
 import { client } from '@mangadex/index'
-import { formatManga } from '@src/lib/format-data'
 import { hasDifference } from '@lib/difference'
 import { diff } from '@lib/diff'
 import { cleanObject } from '@lib/clean-object'
-import { ChapterData, ChapterModel, ChapterKeys } from '@src/models/Chapter'
+import { ChapterModel, ChapterKeys } from '@src/models/Chapter'
 import { mangaCache, chapterCache } from './cache'
+import { Chapter, Manga, MangaGroup } from 'mangadex-api/typings/mangadex'
+import { GroupModel } from '@src/models/Group'
 
-export interface MangaResult {
-  type: 'cache' | 'db' | 'api'
-  manga: MangaData
+export interface GetMangaOptions {
+  select?: Array<string>
 }
 
-export interface ChapterResult {
-  type: 'cache' | 'db' | 'api'
-  chapter: ChapterData
-}
-
-export const getManga = async (mangaId: number): Promise<MangaResult> => {
-  const result: MangaResult = {
-    type: null,
-    manga: null
-  }
-  const cachedManga = mangaCache.get(mangaId) as MangaData
+export const getManga = async (
+  mangaId: number,
+  options: GetMangaOptions = {}
+): Promise<Manga> => {
+  const cachedManga = mangaCache.get(mangaId)
 
   if (cachedManga) {
-    result.manga = cachedManga
-    result.type = 'cache'
-    return result
+    return cachedManga
   }
+
   const dbManga = await MangaModel.findOne({ manga_id: mangaId })
 
-  if (!dbManga) {
-    const apiManga = await client.getManga(mangaId)
+  if (dbManga) {
+    // If cache is outdated then update it
+    if (dbManga.updated_at - 1000 * 5 * 60 > Date.now()) {
+      const apiManga = await client.getManga(mangaId)
+      if (
+        hasDifference(cleanObject(dbManga.manga, MangaKeys), apiManga.manga) ||
+        dbManga.groups.length !== apiManga.group.length
+      ) {
+        mangaCache.set(mangaId, apiManga)
+        await MangaModel.updateOne(
+          { manga_id: mangaId },
+          {
+            $set: {
+              manga: apiManga.manga,
+              groups: apiManga.group.map(({ id }) => id)
+            }
+          }
+        )
 
-    const formattedManga = formatManga(apiManga)
+        return apiManga
+      }
 
-    mangaCache.set(mangaId, formattedManga)
-
-    const manga = new MangaModel({
-      manga_id: mangaId,
-      manga: formattedManga
-    })
-
-    await manga.save()
-
-    result.type = 'api'
-    result.manga = formattedManga
-
-    return result
-  }
-  // If cache is outdated then update it
-  if (dbManga.updated_at - 1000 * 5 * 60 > Date.now()) {
-    const apiManga = await client.getManga(mangaId)
-    const formattedManga = formatManga(apiManga)
-    if (hasDifference(cleanObject(dbManga.manga, MangaKeys), formattedManga)) {
-      const changes = diff(
-        cleanObject(dbManga.manga, MangaKeys),
-        formattedManga
-      )
-      mangaCache.set(mangaId, formattedManga)
       await MangaModel.updateOne(
         { manga_id: mangaId },
-        { $set: { manga: changes as MangaData } }
+        { $set: { updated_at: Date.now() } }
       )
 
-      result.type = 'api'
-      result.manga = formattedManga
-
-      return result
+      return apiManga
     }
+
+    // else check if only manga field is needed
+    if (
+      options.select &&
+      options.select.includes('manga') &&
+      options.select.length === 1
+    ) {
+      return { manga: dbManga.manga } as Manga
+    }
+    // else gather all fields
+    const chapter = await ChapterModel.find({
+      'cached.manga_id': mangaId
+    }).sort({ chapter_id: 'asc' })
+
+    const group = await GroupModel.find({
+      group_id: {
+        $in: dbManga.groups
+      }
+    })
+
+    return {
+      group: group.map(({ group }) => group as MangaGroup),
+      chapter: chapter.map(({ chapter }) => chapter as Chapter),
+      manga: dbManga.manga,
+      status: 'OK'
+    } as Manga
   }
-  mangaCache.set(mangaId, dbManga.manga)
 
-  result.type = 'db'
-  result.manga = dbManga.manga
+  const apiManga = await client.getManga(mangaId)
 
-  return result
+  const existsChapters = await ChapterModel.find(
+    {
+      'chapter.manga_id': mangaId
+    },
+    'chapter_id'
+  )
+
+  const chaptersToCreate = apiManga.chapter.filter(
+    ({ id }) => !existsChapters.some(({ chapter_id }) => chapter_id === id)
+  )
+
+  for (const chapter of chaptersToCreate) {
+    await ChapterModel.create({
+      chapter_id: chapter.id,
+      chapter: chapter
+    })
+  }
+
+  const existsGroups = await GroupModel.find(
+    {
+      group_id: {
+        $in: apiManga.group.map(({ id }) => id)
+      }
+    },
+    'group_id'
+  )
+
+  const groupsToCreate = apiManga.group.filter(
+    ({ id }) => !existsGroups.some(({ group_id }) => group_id === id)
+  )
+
+  for (const group of groupsToCreate) {
+    console.log(group)
+    await GroupModel.create({
+      group_id: parseInt(group.id),
+      group
+    })
+  }
+
+  await MangaModel.create({
+    manga_id: mangaId,
+    manga: apiManga.manga,
+    groups: apiManga.group.map(({ id }) => id)
+  })
+
+  return apiManga
 }
 
-export const getChapter = async (chapterId: number): Promise<ChapterData> => {
-  const cachedChapter = chapterCache.get(chapterId) as ChapterData
+export const getChapter = async (chapterId: number): Promise<Chapter> => {
+  const cachedChapter = chapterCache.get(chapterId)
 
   if (cachedChapter) {
     return cachedChapter
@@ -89,7 +141,7 @@ export const getChapter = async (chapterId: number): Promise<ChapterData> => {
   const dbChapter = await ChapterModel.findOne({ chapter_id: chapterId })
 
   if (!dbChapter) {
-    const apiChapter = (await client.getChapter(chapterId)) as ChapterData
+    const apiChapter = await client.getChapter(chapterId)
 
     chapterCache.set(chapterId, apiChapter)
 
@@ -104,7 +156,7 @@ export const getChapter = async (chapterId: number): Promise<ChapterData> => {
   }
   // If cache is outdated then update it
   if (dbChapter.updated_at - 1000 * 5 * 60 > Date.now()) {
-    const apiChapter = (await client.getChapter(chapterId)) as ChapterData
+    const apiChapter = await client.getChapter(chapterId)
     if (
       hasDifference(cleanObject(dbChapter.chapter, ChapterKeys), apiChapter)
     ) {
@@ -115,12 +167,12 @@ export const getChapter = async (chapterId: number): Promise<ChapterData> => {
       chapterCache.set(chapterId, apiChapter)
       await ChapterModel.updateOne(
         { chapter_id: chapterId },
-        { $set: { chapter: changes as ChapterData } }
+        { $set: { chapter: changes as Chapter } }
       )
       return apiChapter
     }
   }
-  chapterCache.set(chapterId, dbChapter.chapter)
+  chapterCache.set(chapterId, dbChapter.chapter as Chapter)
 
-  return dbChapter.chapter
+  return dbChapter.chapter as Chapter
 }

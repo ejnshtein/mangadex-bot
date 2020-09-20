@@ -1,7 +1,8 @@
-import Mangadex, { AgentConstructor } from 'mangadex-api'
-import Agent from 'mangadex-api/Agent'
-import fs from 'fs'
-import exitHook from 'async-exit-hook'
+import Agent from 'mangadex-api/src/Agent'
+import * as fs from 'fs'
+import { AgentConstructor, MangadexConstructor } from 'mangadex-api'
+const exitHook = require('async-exit-hook')
+const Mangadex = require('mangadex-api') as MangadexConstructor
 
 const {
   MANGADEX_USERNAME,
@@ -16,7 +17,10 @@ export const client = new Mangadex({
       MANGADEX_PASSWORD,
       false
     )
-    await Agent.saveSession(MANGADEX_SESSION_PATH, session)
+    await (Agent as AgentConstructor).saveSession(
+      MANGADEX_SESSION_PATH,
+      session
+    )
     return session
   }
 })

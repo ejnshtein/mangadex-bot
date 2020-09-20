@@ -1,95 +1,9 @@
 import { prop, modelOptions, getModelForClass } from '@typegoose/typegoose'
+import {
+  Chapter as MDChapter,
+  MangaChapter
+} from 'mangadex-api/typings/mangadex'
 import { connection } from '../database'
-
-export interface ChapterData {
-  /**
-   * Chapter id
-   */
-  id: number
-
-  /**
-   * Chapter title
-   */
-  title: string
-
-  /**
-   * Chapter number
-   */
-  chapter: string
-
-  /**
-   * Chapter volume
-   */
-  volume: string
-
-  /**
-   * Manga id
-   */
-  manga_id: number
-
-  /**
-   * Comments count
-   */
-  comments: number
-
-  /**
-   * One of these:
-   * `unavailable` - means chapter was deleted
-   * `external` - means chapter is not hosted on mangadex
-   * `OK` - ok
-   */
-  status: string
-
-  /**
-   * Chapter language code (gb, jp, ru, e.t.c.)
-   */
-  lang_code: string
-
-  /**
-   * Chapter language full name
-   */
-  lang_name: string
-
-  /**
-   * When chapter was published timestamp in unix
-   */
-  timestamp: number
-
-  long_strip: number
-
-  /**
-   * Hash for server images
-   */
-  hash: string
-
-  /**
-   * Chapter pages list
-   */
-  page_array: string[]
-
-  /**
-   * Chapter server url
-   */
-  server: string
-
-  /**
-   * Shows only if manga is now hosted on mangadex (Like Dr. Stone)
-   * Will contain url to chapter.
-   */
-  external: string
-
-  group_id: number
-
-  group_name: string
-
-  group_id_2?: number
-
-  group_name_2?: string
-
-  group_id_3?: number
-
-  group_name_3?: string
-}
 
 @modelOptions({
   existingConnection: connection,
@@ -107,10 +21,20 @@ export class Chapter {
   @prop({ unique: true })
   public chapter_id: number
 
-  public chapter: ChapterData
+  @prop({ default: 'preview' })
+  public type?: string
 
-  public updated_at: number
-  public created_at: number
+  @prop({ required: true })
+  public chapter: MDChapter | MangaChapter
+
+  @prop({ default: false })
+  public cached?: boolean
+
+  @prop({ default: '' })
+  public telegraph_url?: string
+
+  public updated_at?: number
+  public created_at?: number
 }
 
 export const ChapterModel = getModelForClass(Chapter)

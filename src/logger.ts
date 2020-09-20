@@ -1,7 +1,10 @@
-import { TelegrafContext } from './types/telegraf'
+import { TelegrafContext } from 'telegraf'
 import { UserModel } from './models/User'
 
-export default async function (ctx: TelegrafContext, next: () => Promise<void>): Promise<void> {
+export default async function (
+  ctx: TelegrafContext,
+  next: () => Promise<void>
+): Promise<void> {
   const { updateType, chat, from } = ctx
   if (
     updateType === 'inline_query' ||

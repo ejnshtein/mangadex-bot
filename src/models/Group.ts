@@ -1,4 +1,5 @@
 import { prop, modelOptions, getModelForClass } from '@typegoose/typegoose'
+import { MangadexGroup, MangaGroup } from 'mangadex-api/typings/mangadex'
 import { connection } from '../database'
 
 @modelOptions({
@@ -15,9 +16,15 @@ import { connection } from '../database'
 })
 export class Group {
   @prop({ unique: true })
-  public id: number
+  public group_id: number
 
-  public title: string
+  @prop({ default: 'preview' })
+  public type?: string
+
+  public group: MangadexGroup | MangaGroup
+
+  public updated_at?: number
+  public created_at?: number
 }
 
 export const GroupModel = getModelForClass(Group)

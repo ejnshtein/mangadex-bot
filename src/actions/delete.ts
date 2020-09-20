@@ -1,20 +1,15 @@
-import { Composer } from 'telegraf'
-import { bot } from '../bot'
+import { Composer, TelegrafContext } from 'telegraf'
+import { bot } from '@src/bot'
 
-const composer = new Composer()
+const composer = new Composer<TelegrafContext>()
 
-composer.action(
-  /^delete$/i,
-  async ctx => {
-    try {
-      await ctx.deleteMessage()
-    } catch (e) {
-      return ctx.answerCbQuery(
-        'This message too old, you should delete it yourserf.',
-        true
-      )
-    }
-    return ctx.answerCbQuery('')
-  })
+composer.action(/^delete$/i, async (ctx) => {
+  try {
+    await ctx.deleteMessage()
+  } catch (e) {
+    return ctx.answerCbQuery(ctx.i18n.t('delete.too_old_message'), true)
+  }
+  return ctx.answerCbQuery('')
+})
 
 bot.use(composer.middleware())

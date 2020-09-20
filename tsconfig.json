@@ -18,7 +18,8 @@
       "@lib/*": ["src/lib/*"],
       "@actions/*": ["src/actions/*"],
       "@type/*": ["src/types/*"],
-      "@src/*": ["src/*"]
+      "@src/*": ["src/*"],
+      "@view/*": ["src/view/*"]
     }
   },
   "include": [

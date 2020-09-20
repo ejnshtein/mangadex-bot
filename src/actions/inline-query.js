@@ -5,20 +5,20 @@ import HtmlEntities from 'html-entities'
 import { chapterView } from '../generators/index.js'
 import { bot } from '../core/bot.js'
 const composer = new Composer()
-const client = new Mangadex({ shareMangaCache: true })
+const client = new Mangadex()
 const { AllHtmlEntities } = HtmlEntities
 const { decode } = new AllHtmlEntities()
 
 composer.inlineQuery(/^manga:([0-9]+)$/i, async ({ match, me, inlineQuery, answerInlineQuery }) => {
-  if (inlineQuery.offset && inlineQuery.offset === '1') { return answerInlineQuery([], queryOptions()) }
+  if (inlineQuery.offset && inlineQuery.offset === '1') {
+    return answerInlineQuery([], queryOptions())
+  }
   const mangaId = match[1]
   try {
-    var { manga } = await client.getManga(mangaId)
+    var { manga } = await client.getManga(parseInt(mangaId))
   } catch (e) {
     return answerInlineQuery(sendError(e), queryOptions())
   }
-  manga.description = manga.description.replace(/\[url=(\S+?)\](\S+?)\[\/url\]/ig, `<a href="$1">$2</a>`)
-  // console.log(manga, mangaId)
   try {
     await answerInlineQuery(
       [

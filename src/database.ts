@@ -14,6 +14,6 @@ connection.then(() => {
   console.log('DB connected')
 })
 
-connection.catch(e => {
+connection.catch((e) => {
   console.log('DB error', e)
 })

@@ -4,7 +4,7 @@ services:
   mangadex-bot:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     restart: always
     env_file:
       - .env

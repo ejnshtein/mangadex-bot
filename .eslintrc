@@ -17,6 +17,7 @@
   "rules": {
     "camelcase": "warn",
     "@typescript-eslint/no-unused-vars": "warn",
-    "no-prototype-builtins": "off"
+    "no-prototype-builtins": "off",
+    "@typescript-eslint/no-var-requires": "warn"
   }
 }

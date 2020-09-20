@@ -1,24 +1,21 @@
 import { Composer, TelegrafContext } from 'telegraf'
 import { bot } from '@src/bot'
-import { parseInlineArguments } from '@src/lib/inline-args'
 import { mangaView } from '@src/view/manga'
+import { defaultConfig } from '@src/config'
 
 const composer = new Composer<TelegrafContext>()
 
-composer.action(
-  /^manga:(\S+)$/i,
+composer.url(
+  /mangadex\.org\/title\/([0-9]+)/i,
   Composer.privateChat(async (ctx) => {
-    const args = parseInlineArguments(ctx.match[1], {
-      history: 'page=1:offset=0',
-      list: ''
-    })
+    const mangaId = parseInt(ctx.match[1])
 
     const { text, extra } = await mangaView({
-      mangaId: parseInt(args.mangaid),
-      list: args.list,
+      mangaId,
       favorite: false,
+      list: '',
+      history: defaultConfig.history,
       user: ctx.state.user,
-      history: args.history,
       i18n: ctx.i18n
     })
 

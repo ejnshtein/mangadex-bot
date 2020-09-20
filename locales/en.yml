@@ -1,0 +1,27 @@
+start:
+  greetings: |
+    Hello!
+    I'm <a href="https://mangadex.org">Mangadex</a> bot.
+    I can send to you chapters from your favorite manga right here!
+  greetings_inline: |
+    Let's find some manga!
+manga:
+  view: |
+    <a href="${manga.cover_url}">&#8203;</a><a href="https://mangadex.org/title/${mangaId}">${manga.title}</a>
+
+    <b>Author:</b> <a href="https://mangadex.org/search?author=${manga.author}">${manga.author}</a>
+    <b>Artist:</b> <a href="https://mangadex.org/search?artist=${manga.artist}">${manga.artist}</a>
+    <b>Genres:</b> ${genres}
+    <b>Pub. status:</b> ${manga.status_text}
+    <b>Language:</b> ${manga.lang_name}
+  without_chapters: |
+    <b>Without chapters</b>
+  hentai_manga: |
+    <b>Hentai-manga</b>
+updated_timestamp: |
+  <b>Updated: ${timestamp}</b>
+list: |
+  <b>List:</b> ${list}
+delete:
+  too_old_message: |
+    This message too old, you should delete it yourserf.
