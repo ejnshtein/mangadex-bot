@@ -1,28 +1,18 @@
 import { prop, modelOptions, getModelForClass } from '@typegoose/typegoose'
 import { MangaData } from 'mangadex-api/typings/mangadex'
-import { connection } from '../database'
+import { ModelOptions } from '.'
 
-@modelOptions({
-  existingConnection: connection,
-  schemaOptions: {
-    timestamps: {
-      updatedAt: 'updated_at',
-      createdAt: 'created_at'
-    },
-    toJSON: {
-      virtuals: true
-    }
-  }
-})
+export type DBMangaData = Omit<MangaData, 'genres'> & {
+  genres: number[]
+}
+
+@modelOptions(ModelOptions)
 export class Manga {
   @prop({ unique: true })
   public manga_id: number
 
   @prop({ required: true })
-  public manga: MangaData
-
-  @prop({ required: true })
-  public groups: number[]
+  public manga: DBMangaData
 
   public updated_at?: number
   public created_at?: number

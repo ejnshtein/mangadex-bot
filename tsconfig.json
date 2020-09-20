@@ -19,7 +19,8 @@
       "@actions/*": ["src/actions/*"],
       "@type/*": ["src/types/*"],
       "@src/*": ["src/*"],
-      "@view/*": ["src/view/*"]
+      "@view/*": ["src/view/*"],
+      "@models/*": ["src/models/*"]
     }
   },
   "include": [

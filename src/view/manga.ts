@@ -25,6 +25,7 @@ export const mangaView = async ({
   i18n
 }: MangaViewArgument): Promise<ViewResult> => {
   const result: ViewResult = {
+    text: '',
     extra: {
       parse_mode: 'HTML'
     }
@@ -36,6 +37,8 @@ export const mangaView = async ({
 
   // decode title characters
   manga.title = decode(manga.title)
+
+  result.text += `<a href="${manga.cover_url}">&#8203;</a><a href="https://mangadex.org/title/${mangaId}">${manga.title}</a>\n\n`
 
   const view = i18n.t('manga.view', {
     mangaId,
@@ -63,7 +66,7 @@ export const mangaView = async ({
     result.text += `\n\n<a href="${i18n.t('list', { list })}">&#8203;</a>`
   }
 
-  result.text += `\n\n${i18n.t('updated_timestamp', {
+  result.text += `\n${i18n.t('updated_timestamp', {
     timestamp: templates.date()
   })}`
 

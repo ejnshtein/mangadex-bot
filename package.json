@@ -41,7 +41,7 @@
     "form-data": "^3.0.0",
     "html-entities": "^1.3.1",
     "lru-cache": "^6.0.0",
-    "mangadex-api": "^3.0.2",
+    "mangadex-api": "^3.0.4",
     "module-alias": "^2.2.2",
     "mongoose": "^5.9.22",
     "node-schedule": "^1.3.2",
@@ -84,6 +84,7 @@
     "@lib": "dist/lib",
     "@actions": "dist/actions",
     "@src": "dist",
-    "@view": "dist/view"
+    "@view": "dist/view",
+    "@models": "dist/models"
   }
 }

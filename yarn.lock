@@ -2229,10 +2229,10 @@ make-dir@^3.0.0:
   dependencies:
     semver "^6.0.0"
 
-mangadex-api@^3.0.2:
-  version "3.0.2"
-  resolved "https://registry.yarnpkg.com/mangadex-api/-/mangadex-api-3.0.2.tgz#526ff950d4cd74e65758160a97f48607073f8a9a"
-  integrity sha512-RnG1p8stmoDspF36oFRgLXPtk5WHhfUlQYRTQZCm70Pj2eNs103pQ6pMXJiYCOKnlvVZAnlY/+c2nRC/HFqKXQ==
+mangadex-api@^3.0.4:
+  version "3.0.4"
+  resolved "https://registry.yarnpkg.com/mangadex-api/-/mangadex-api-3.0.4.tgz#410e89e32e14865a506f15a08940cb00d2bb1d1a"
+  integrity sha512-Y8PGIv4BQSb1ocvvAav20AK9TDQvh5LTx5hClNsvU2R81aCk/EeieacCZunhvar0XkesWEfl0ocpc0x6gQV9cg==
   dependencies:
     "@ejnshtein/smol-request" "^1.1.1"
     cheerio "^1.0.0-rc.3"

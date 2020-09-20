@@ -1,9 +1,10 @@
 import * as mongoose from 'mongoose'
-import env from './env.js'
 
 const { createConnection } = mongoose
 
-export const connection = createConnection(env.DATABASE_URL, {
+const { DATABASE_URL } = process.env
+
+export const connection = createConnection(DATABASE_URL, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   useCreateIndex: true,

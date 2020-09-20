@@ -1,30 +1,29 @@
-import { prop, modelOptions, getModelForClass } from '@typegoose/typegoose'
+import {
+  prop,
+  modelOptions,
+  getModelForClass,
+  mongoose
+} from '@typegoose/typegoose'
 import {
   Chapter as MDChapter,
   MangaChapter
 } from 'mangadex-api/typings/mangadex'
-import { connection } from '../database'
+import { ModelOptions } from '.'
 
-@modelOptions({
-  existingConnection: connection,
-  schemaOptions: {
-    timestamps: {
-      updatedAt: 'updated_at',
-      createdAt: 'created_at'
-    },
-    toJSON: {
-      virtuals: true
-    }
-  }
-})
+enum ChapterType {
+  preview = 'preview',
+  full = 'full'
+}
+
+@modelOptions(ModelOptions)
 export class Chapter {
   @prop({ unique: true })
   public chapter_id: number
 
-  @prop({ default: 'preview' })
-  public type?: string
+  @prop({ default: 'preview', enum: ChapterType })
+  public type?: ChapterType
 
-  @prop({ required: true })
+  @prop({ required: true, type: mongoose.Schema.Types.Mixed })
   public chapter: MDChapter | MangaChapter
 
   @prop({ default: false })

@@ -1,19 +1,8 @@
 import { prop, modelOptions, getModelForClass } from '@typegoose/typegoose'
 import { MangadexGroup, MangaGroup } from 'mangadex-api/typings/mangadex'
-import { connection } from '../database'
+import { ModelOptions } from '.'
 
-@modelOptions({
-  existingConnection: connection,
-  schemaOptions: {
-    timestamps: {
-      updatedAt: 'updated_at',
-      createdAt: 'created_at'
-    },
-    toJSON: {
-      virtuals: true
-    }
-  }
-})
+@modelOptions(ModelOptions)
 export class Group {
   @prop({ unique: true })
   public group_id: number
@@ -22,6 +11,9 @@ export class Group {
   public type?: string
 
   public group: MangadexGroup | MangaGroup
+
+  @prop({ required: true, items: Number })
+  public manga: number[]
 
   public updated_at?: number
   public created_at?: number

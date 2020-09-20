@@ -1,12 +1,24 @@
-import { MangaModel, MangaKeys } from '@src/models/Manga'
+import { MangaModel, MangaKeys, DBMangaData } from '@src/models/Manga'
 import { client } from '@mangadex/index'
+import {
+  saveNewChapters,
+  saveNewGenres,
+  saveNewGroups,
+  saveNewManga
+} from '@mangadex/save'
 import { hasDifference } from '@lib/difference'
 import { diff } from '@lib/diff'
 import { cleanObject } from '@lib/clean-object'
 import { ChapterModel, ChapterKeys } from '@src/models/Chapter'
 import { mangaCache, chapterCache } from './cache'
-import { Chapter, Manga, MangaGroup } from 'mangadex-api/typings/mangadex'
+import {
+  Chapter,
+  Manga,
+  MangaData,
+  MangaGroup
+} from 'mangadex-api/typings/mangadex'
 import { GroupModel } from '@src/models/Group'
+import { GenreModel } from '@src/models/Genre'
 
 export interface GetMangaOptions {
   select?: Array<string>
@@ -28,28 +40,47 @@ export const getManga = async (
     // If cache is outdated then update it
     if (dbManga.updated_at - 1000 * 5 * 60 > Date.now()) {
       const apiManga = await client.getManga(mangaId)
+
+      const [groupsCount, chaptersCount] = await Promise.all([
+        GroupModel.countDocuments({
+          manga: mangaId
+        }),
+        ChapterModel.countDocuments({
+          'chapter.manga_id': mangaId
+        })
+      ])
+
+      mangaCache.set(mangaId, apiManga)
+
       if (
-        hasDifference(cleanObject(dbManga.manga, MangaKeys), apiManga.manga) ||
-        dbManga.groups.length !== apiManga.group.length
+        hasDifference(cleanObject(dbManga.manga, MangaKeys), apiManga.manga)
       ) {
-        mangaCache.set(mangaId, apiManga)
+        await saveNewGenres(apiManga.manga.genres)
+        const saveManga = {
+          ...apiManga.manga,
+          genres: apiManga.manga.genres.map(({ id }) => id)
+        } as DBMangaData
         await MangaModel.updateOne(
           { manga_id: mangaId },
           {
             $set: {
-              manga: apiManga.manga,
-              groups: apiManga.group.map(({ id }) => id)
+              manga: saveManga
             }
           }
         )
-
-        return apiManga
       }
-
-      await MangaModel.updateOne(
-        { manga_id: mangaId },
-        { $set: { updated_at: Date.now() } }
-      )
+      if (
+        apiManga.chapter.length !== chaptersCount &&
+        apiManga.chapter.length > chaptersCount
+      ) {
+        await saveNewChapters(mangaId, apiManga.chapter)
+      }
+      if (
+        apiManga.group.length !== groupsCount &&
+        apiManga.group.length > groupsCount
+      ) {
+        await saveNewGroups(mangaId, apiManga.group)
+      }
 
       return apiManga
     }
@@ -60,73 +91,39 @@ export const getManga = async (
       options.select.includes('manga') &&
       options.select.length === 1
     ) {
-      return { manga: dbManga.manga } as Manga
+      return { manga: (dbManga.manga as unknown) as MangaData } as Manga
     }
     // else gather all fields
-    const chapter = await ChapterModel.find({
-      'cached.manga_id': mangaId
-    }).sort({ chapter_id: 'asc' })
-
-    const group = await GroupModel.find({
-      group_id: {
-        $in: dbManga.groups
-      }
-    })
+    const [chapter, group, genres] = await Promise.all([
+      ChapterModel.find({
+        'cached.manga_id': mangaId
+      }).sort({ chapter_id: 'asc' }),
+      GroupModel.find({
+        manga: mangaId
+      }),
+      GenreModel.find({
+        id: {
+          $in: dbManga.manga.genres
+        }
+      })
+    ])
 
     return {
       group: group.map(({ group }) => group as MangaGroup),
       chapter: chapter.map(({ chapter }) => chapter as Chapter),
-      manga: dbManga.manga,
+      manga: {
+        ...dbManga.manga,
+        genres: genres.map(({ genre_id, name }) => ({ id: genre_id, name }))
+      } as MangaData,
       status: 'OK'
     } as Manga
   }
 
   const apiManga = await client.getManga(mangaId)
 
-  const existsChapters = await ChapterModel.find(
-    {
-      'chapter.manga_id': mangaId
-    },
-    'chapter_id'
-  )
-
-  const chaptersToCreate = apiManga.chapter.filter(
-    ({ id }) => !existsChapters.some(({ chapter_id }) => chapter_id === id)
-  )
-
-  for (const chapter of chaptersToCreate) {
-    await ChapterModel.create({
-      chapter_id: chapter.id,
-      chapter: chapter
-    })
-  }
-
-  const existsGroups = await GroupModel.find(
-    {
-      group_id: {
-        $in: apiManga.group.map(({ id }) => id)
-      }
-    },
-    'group_id'
-  )
-
-  const groupsToCreate = apiManga.group.filter(
-    ({ id }) => !existsGroups.some(({ group_id }) => group_id === id)
-  )
-
-  for (const group of groupsToCreate) {
-    console.log(group)
-    await GroupModel.create({
-      group_id: parseInt(group.id),
-      group
-    })
-  }
-
-  await MangaModel.create({
-    manga_id: mangaId,
-    manga: apiManga.manga,
-    groups: apiManga.group.map(({ id }) => id)
-  })
+  await saveNewChapters(mangaId, apiManga.chapter)
+  await saveNewGroups(mangaId, apiManga.group)
+  await saveNewManga(mangaId, apiManga.manga)
 
   return apiManga
 }

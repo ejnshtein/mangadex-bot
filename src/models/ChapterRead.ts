@@ -1,18 +1,7 @@
 import { modelOptions, getModelForClass } from '@typegoose/typegoose'
-import { connection } from '../database'
+import { ModelOptions } from '.'
 
-@modelOptions({
-  existingConnection: connection,
-  schemaOptions: {
-    timestamps: {
-      updatedAt: 'updated_at',
-      createdAt: 'created_at'
-    },
-    toJSON: {
-      virtuals: true
-    }
-  }
-})
+@modelOptions(ModelOptions)
 export class ChapterRead {
   public user_id: number
 
