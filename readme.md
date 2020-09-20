@@ -32,3 +32,50 @@ Other commands and features are still in development.
 ## Tips
 
 - I recommend to use Official Telegram app for [Android](https://telegram.org/dl/android) or [iOS](https://telegram.org/dl/ios) instead of [X version](https://play.google.com/store/apps/details?id=org.thunderdog.challegram&hl=en), Telegram beta is ok too. Because in X version (for Android, i don't have iOS device, so idk) pictures have worse quality than in Official one (for Android, i don't have iOS device, so idk, and yes, X version is official too, but it's _a slick experimental Telegram client based on TDLib._ [Here](https://telegram.org/apps#telegram-database-library-tdlib)).
+
+## Contribution
+
+I'd recommend to use these aliases to work with project:
+```bash
+alias dc='docker-compose'
+alias dcd='docker-compose -f docker-compose.dev.yml'
+alias dcdlogs='docker-compose -f docker-compose.dev.yml logs -f --tail="100"'
+```
+
+### Install dependencies
+
+Install [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/).  
+To run project in dev mode with hot reload use command
+```bash
+// alias
+dcd up -d
+
+// no alias
+docker-compose -f docker-compose.dev.yml up -d
+```
+And then
+```bash
+// alias
+dcdlogs mangadex-bot
+
+// no alias
+docker-compose -f docker-composer.dev.yml logs -f mangadex-bot
+```
+
+To stop project
+```bash
+// alias
+dcd down
+
+// no alias
+docker-compose -f docker-composer.dev.yml down
+```
+
+To start project in production mode
+```bash
+// alias
+dc up -d
+
+// no alias
+docker-compose up -d
+```
