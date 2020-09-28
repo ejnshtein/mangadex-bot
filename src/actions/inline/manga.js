@@ -8,22 +8,19 @@ const composer = new Composer()
 
 composer.action(
   /^manga:(\S+)$/i,
-  Composer.privateChat(
-    async ctx => {
-      const { id } = qs.parse(ctx.match[1])
-      try {
-        const { extra, text } = await mangaView(
-          {
-            mangaId: Number.parseInt(id),
-            fromId: ctx.from.id
-          }
-        )
-        await ctx.editMessageText(text, extra)
-        await ctx.answerCbQuery('')
-      } catch (e) {
-        return ctx.answerCbQuery(templates.error(e), true)
-      }
-    })
+  Composer.privateChat(async (ctx) => {
+    const { id } = qs.parse(ctx.match[1])
+    try {
+      const { extra, text } = await mangaView({
+        mangaId: Number.parseInt(id),
+        fromId: ctx.from.id
+      })
+      await ctx.editMessageText(text, extra)
+      await ctx.answerCbQuery('')
+    } catch (e) {
+      return ctx.answerCbQuery(templates.error(e), true)
+    }
+  })
 )
 
 bot.use(composer.middleware())

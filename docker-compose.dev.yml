@@ -12,6 +12,8 @@ services:
       - .:/usr/src/app
     networks:
       - default
+    ports:
+      - 9222:9222 # debug port
 
 networks:
   default:

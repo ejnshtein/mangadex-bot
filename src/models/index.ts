@@ -1,6 +1,8 @@
 import { connection } from '@src/database'
+import { Severity } from '@typegoose/typegoose'
+import { IModelOptions } from '@typegoose/typegoose/lib/types'
 
-export const ModelOptions = {
+export const ModelOptions: IModelOptions = {
   existingConnection: connection,
   schemaOptions: {
     timestamps: {
@@ -13,5 +15,8 @@ export const ModelOptions = {
     toObject: {
       virtuals: true
     }
+  },
+  options: {
+    allowMixed: Severity.ALLOW
   }
 }

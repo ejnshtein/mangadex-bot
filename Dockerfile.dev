@@ -8,6 +8,6 @@ RUN yarn install --network-timeout 100000
 
 ADD . /usr/src/app
 
-RUN yarn build-ts
+# RUN yarn build-ts
 
-CMD [ "yarn", "develop" ]
+CMD [ "yarn", "watch-js" ]

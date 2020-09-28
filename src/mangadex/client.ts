@@ -94,9 +94,9 @@ export const getManga = async (
       return { manga: (dbManga.manga as unknown) as MangaData } as Manga
     }
     // else gather all fields
-    const [chapter, group, genres] = await Promise.all([
+    const [chapters, groups, genres] = await Promise.all([
       ChapterModel.find({
-        'cached.manga_id': mangaId
+        'chapter.manga_id': mangaId
       }).sort({ chapter_id: 'asc' }),
       GroupModel.find({
         manga: mangaId
@@ -109,8 +109,8 @@ export const getManga = async (
     ])
 
     return {
-      group: group.map(({ group }) => group as MangaGroup),
-      chapter: chapter.map(({ chapter }) => chapter as Chapter),
+      group: groups.map(({ group }) => group as MangaGroup),
+      chapter: chapters.map(({ chapter }) => chapter as Chapter),
       manga: {
         ...dbManga.manga,
         genres: genres.map(({ genre_id, name }) => ({ id: genre_id, name }))

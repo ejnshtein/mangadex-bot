@@ -1,26 +1,31 @@
 import { Composer, TelegrafContext } from 'telegraf'
 import { bot } from '@src/bot'
 import { parseInlineArguments } from '@lib/inline-args'
-import { mangaView } from '@src/view/manga'
+import { languageSelectedManga } from '@src/view/language-selected-manga'
 
 const composer = new Composer<TelegrafContext>()
 
+/**
+ * After user select language it will bring him there.
+ */
 composer.action(
-  /^manga:(\S+)$/i,
+  /^lang:(\S+)$/i,
   Composer.privateChat(async (ctx) => {
     const args = parseInlineArguments(ctx.match[1], {
       history: 'page=1:offset=0',
-      list: ''
+      list: '',
+      offset: '0'
     })
 
     try {
-      const { text, extra } = await mangaView({
+      const { text, extra } = await languageSelectedManga({
         mangaId: parseInt(args.mangaId),
         list: args.list,
-        favorite: false,
         user: ctx.state.user,
         history: args.history,
-        i18n: ctx.i18n
+        i18n: ctx.i18n,
+        lang: args.lang,
+        offset: parseInt(args.offset)
       })
       await ctx.editMessageText(text, extra)
       await ctx.answerCbQuery('')

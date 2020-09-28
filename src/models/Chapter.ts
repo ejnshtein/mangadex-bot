@@ -21,7 +21,7 @@ export class Chapter {
   public chapter_id: number
 
   @prop({ default: 'preview', enum: ChapterType })
-  public type?: ChapterType
+  public type?: 'preview' | 'full'
 
   @prop({ required: true, type: mongoose.Schema.Types.Mixed })
   public chapter: MDChapter | MangaChapter

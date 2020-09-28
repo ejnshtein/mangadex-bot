@@ -1,6 +1,6 @@
 import { Composer, TelegrafContext } from 'telegraf'
 import { bot } from '@src/bot'
-import { mangaView } from '@src/view/manga'
+import { mangaView } from '@view/manga'
 import { defaultConfig } from '@src/config'
 
 const composer = new Composer<TelegrafContext>()

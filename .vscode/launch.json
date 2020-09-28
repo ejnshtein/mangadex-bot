@@ -6,15 +6,19 @@
   "configurations": [
     {
       "type": "node",
-      "request": "launch",
-      "name": "Launch Program",
-      "skipFiles": [
-        "<node_internals>/**"
-      ],
-      "program": "${workspaceFolder}/dist/app.js",
-      "preLaunchTask": "${defaultBuildTask}",
+      "request": "attach",
+      "name": "Attach to Docker",
+      "preLaunchTask": "tsc-watch",
+      "protocol":"auto",
+      "port": 9222,
+      "restart": true,
+      "localRoot": "${workspaceFolder}/dist",
+      "remoteRoot": "/usr/src/app/dist",
       "outFiles": [
         "${workspaceFolder}/dist/**/*.js"
+      ],
+      "skipFiles": [
+        "<node_internals>/**/*.js",
       ]
     }
   ]

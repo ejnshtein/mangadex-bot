@@ -12,7 +12,7 @@ export class Group {
 
   public group: MangadexGroup | MangaGroup
 
-  @prop({ required: true, items: Number })
+  @prop({ required: true, type: Number })
   public manga: number[]
 
   public updated_at?: number

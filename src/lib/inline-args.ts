@@ -8,7 +8,7 @@ export const parseInlineArguments = (
 
   if (Object.keys(defaults).length > 0) {
     for (const [key, value] of Object.entries(defaults)) {
-      if (!result.hasOwnProperty(key)) {
+      if (!(key in result)) {
         result[key] = value
       }
     }

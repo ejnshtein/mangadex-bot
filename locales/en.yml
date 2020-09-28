@@ -16,6 +16,8 @@ manga:
     <b>Without chapters</b>
   hentai_manga: |
     <b>Hentai-manga</b>
+  choose_language_button: |
+    Choose chapters language below
 updated_timestamp: |
   <b>Updated: ${timestamp}</b>
 list: |
@@ -23,3 +25,12 @@ list: |
 delete:
   too_old_message: |
     This message too old, you should delete it yourserf.
+button:
+  back: ⬅ Back
+  next: Next ➡
+  share: ☞ Share
+  refresh: ↻ Refresh
+error: |
+  Something went wrong...
+
+  ${message}

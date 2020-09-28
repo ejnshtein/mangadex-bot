@@ -20,7 +20,8 @@
       "@type/*": ["src/types/*"],
       "@src/*": ["src/*"],
       "@view/*": ["src/view/*"],
-      "@models/*": ["src/models/*"]
+      "@models/*": ["src/models/*"],
+      "@template/*": ["src/template/*"]
     }
   },
   "include": [

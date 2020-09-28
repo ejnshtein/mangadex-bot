@@ -10,7 +10,7 @@
     "watch-ts": "tsc -w",
     "lint": "eslint ./src --ext .ts",
     "test": "nodemon test.js",
-    "watch-js": "nodemon -e .yml,js --watch dist --watch locales ./dist/app.js",
+    "watch-js": "nodemon -e .yml,js --inspect=0.0.0.0:9222 --watch dist --watch locales --nolazy ./dist/app.js",
     "develop": "concurrently -i -k -p \"[{name}]\" -n \"Node,TypeScript\" -c \"yellow.bold,cyan.bold\" \"yarn watch-js\" \"yarn watch-ts\""
   },
   "husky": {
@@ -85,6 +85,7 @@
     "@actions": "dist/actions",
     "@src": "dist",
     "@view": "dist/view",
-    "@models": "dist/models"
+    "@models": "dist/models",
+    "@template": "dist/template"
   }
 }

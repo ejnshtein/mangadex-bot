@@ -1,6 +1,6 @@
 import { prop, modelOptions, getModelForClass } from '@typegoose/typegoose'
 import { MangaData } from 'mangadex-api/typings/mangadex'
-import { ModelOptions } from '.'
+import { ModelOptions } from '@models/index'
 
 export type DBMangaData = Omit<MangaData, 'genres'> & {
   genres: number[]
