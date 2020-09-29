@@ -6,8 +6,8 @@ import { Composer } from 'mangadex-api'
 import { ChapterModel } from '@src/models/Chapter'
 import { mangaTemplate } from '@src/template/manga'
 import { InlineKeyboardButton } from 'telegraf/typings/telegram-types'
-import { stringifyInlineArguments } from '@lib/inline-args'
-import buttons from '@lib/buttons'
+import { buildCallbackData } from '@lib/inline-args'
+import * as button from '@lib/button'
 
 const Composer = require('mangadex-api/src/Composer') as Composer
 
@@ -38,6 +38,16 @@ export const languageSelectedManga = async ({
     }
   }
 
+  /**
+   * mangaId, list, language, history
+   */
+  const languageSelectedMangaCallbackDataArguments = {
+    m: mangaId,
+    l: list,
+    la: lang,
+    h: history
+  }
+
   const { manga, chapter } = await getManga(mangaId, {
     select: ['manga', 'chapter']
   })
@@ -50,13 +60,19 @@ export const languageSelectedManga = async ({
     mangaId
   })
 
-  const chapters = await ChapterModel.find({
-    'chapter.manga_id': mangaId,
-    'chapter.lang_code': lang
-  })
-    .skip(offset + 10)
-    .limit(10)
-    .sort('chapter_id')
+  const [chapters, chaptersCount] = await Promise.all([
+    ChapterModel.find({
+      'chapter.manga_id': mangaId,
+      'chapter.lang_code': lang
+    })
+      .sort('chapter_id')
+      .skip(offset + 10)
+      .limit(10),
+    ChapterModel.find({
+      'chapter.manga_id': mangaId,
+      'chapter.lang_code': lang
+    }).countDocuments()
+  ])
 
   const keyboard: InlineKeyboardButton[][] = [[]]
 
@@ -76,10 +92,10 @@ export const languageSelectedManga = async ({
 
     const button: InlineKeyboardButton = {
       text: buttonText,
-      callback_data: `chapter:${stringifyInlineArguments({
-        list,
-        chapter: languageChapter.chapter_id
-      })}`
+      callback_data: buildCallbackData('chapter', {
+        l: list,
+        c: languageChapter.chapter_id
+      })
     }
 
     if (keyboard[keyboard.length - 1].length < 2) {
@@ -91,14 +107,70 @@ export const languageSelectedManga = async ({
 
   keyboard.unshift([
     {
-      text: buttons.back,
-      callback_data: `manga:${stringifyInlineArguments({
-        list,
-        history,
-        mangaId
-      })}`
+      text: `${button.back()} ${i18n.t('button.back')}`,
+      callback_data: buildCallbackData('manga', {
+        l: list,
+        h: history,
+        m: mangaId
+      })
     }
   ])
+
+  const chaptersNavigationLayer: InlineKeyboardButton[] = []
+
+  chaptersNavigationLayer.push({
+    text: button.page.locate(offset / 10),
+    callback_data: buildCallbackData('lang', {
+      ...languageSelectedMangaCallbackDataArguments,
+      o: offset
+    })
+  })
+
+  const chaptersToRight = chaptersCount - (offset + 10)
+  const chaptersToLeft = chaptersCount - chaptersToRight - 10
+
+  if (chapters.length === 10) {
+    if (chaptersToRight - 10 >= 1) {
+      chaptersNavigationLayer.push({
+        text: button.page.next((offset + 10) / 10 + 1),
+        callback_data: buildCallbackData('lang', {
+          ...languageSelectedMangaCallbackDataArguments,
+          o: offset + 10
+        })
+      })
+    }
+
+    if (chaptersToRight - 20 >= 1) {
+      chaptersNavigationLayer.push({
+        text: button.page.nextDub((offset + 20) / 10 + 1),
+        callback_data: buildCallbackData('lang', {
+          ...languageSelectedMangaCallbackDataArguments,
+          o: offset + 20
+        })
+      })
+    }
+  }
+
+  if (chaptersToLeft >= 1) {
+    chaptersNavigationLayer.unshift({
+      text: button.page.prev(offset / 10 + 1),
+      callback_data: buildCallbackData('lang', {
+        ...languageSelectedMangaCallbackDataArguments,
+        o: offset - 10 > 0 ? offset - 10 : 0
+      })
+    })
+  }
+  if (chaptersToLeft - 10 >= 1) {
+    chaptersNavigationLayer.unshift({
+      text: button.page.prevDub((offset - 10) / 10 + 1),
+      callback_data: buildCallbackData('lang', {
+        ...languageSelectedMangaCallbackDataArguments,
+        o: offset - 20 > 0 ? offset - 20 : 0
+      })
+    })
+  }
+
+  keyboard.push(chaptersNavigationLayer)
 
   result.extra.reply_markup = {
     inline_keyboard: keyboard

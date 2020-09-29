@@ -26,10 +26,10 @@ delete:
   too_old_message: |
     This message too old, you should delete it yourserf.
 button:
-  back: ⬅ Back
-  next: Next ➡
-  share: ☞ Share
-  refresh: ↻ Refresh
+  back: Back
+  next: Next
+  share: Share
+  refresh: Refresh
 error: |
   Something went wrong...
 

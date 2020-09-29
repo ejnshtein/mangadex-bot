@@ -2,20 +2,16 @@ import { ViewResult } from '@type/view'
 import { getManga } from '@mangadex/client'
 import { User } from '@src/models/User'
 import { I18n } from '@type/telegraf-i18n'
-import { template } from '@lib/template'
 import { InlineKeyboardButton } from 'telegraf/typings/telegram-types'
 import { groupBy } from '@lib/group-by'
-import { stringifyInlineArguments } from '@lib/inline-args'
+import { buildCallbackData } from '@lib/inline-args'
 import { MangaChapter } from 'mangadex-api/typings/mangadex'
 import { getLangEmoji } from '@lib/get-lang-emoji'
 import { Composer } from 'mangadex-api'
 import { ChapterModel } from '@src/models/Chapter'
 import { mangaTemplate } from '@template/manga'
+import * as button from '@lib/button'
 const Composer = require('mangadex-api/src/Composer') as Composer
-const HtmlEntities = require('html-entities')
-
-const { AllHtmlEntities } = HtmlEntities
-const { decode } = new AllHtmlEntities()
 
 type MangaViewArgument = {
   mangaId: number
@@ -83,12 +79,12 @@ export const mangaView = async ({
       text += `(${cachedChaptersLength}/${totalChaptersLength})`
       const languageButton: InlineKeyboardButton = {
         text,
-        callback_data: `lang:${stringifyInlineArguments({
-          mangaId,
-          lang: code,
-          list,
-          history
-        })}`
+        callback_data: buildCallbackData('lang', {
+          m: mangaId,
+          la: code,
+          l: list,
+          h: history
+        })
       }
       if (keyboard[keyboard.length - 1].length < 2) {
         keyboard[keyboard.length - 1].push(languageButton)
@@ -106,12 +102,12 @@ export const mangaView = async ({
 
   keyboard.unshift([
     {
-      text: i18n.t('button.back'),
+      text: `${button.back()} ${i18n.t('button.back')}`,
       callback_data: 'back'
     },
     {
-      text: i18n.t('button.refresh'),
-      callback_data: `manga:${stringifyInlineArguments({ mangaId })}`
+      text: `${button.refresh()} ${i18n.t('button.refresh')}`,
+      callback_data: buildCallbackData('manga', { m: mangaId })
     }
   ])
 

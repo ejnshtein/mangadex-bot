@@ -8,7 +8,7 @@ export const connection = createConnection(DATABASE_URL, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   useCreateIndex: true,
-  useFindAndModify: true
+  useFindAndModify: false
 })
 
 connection.then(() => {

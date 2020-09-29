@@ -8,18 +8,26 @@ const composer = new Composer<TelegrafContext>()
 composer.action(
   /^manga:(\S+)$/i,
   Composer.privateChat(async (ctx) => {
-    const args = parseInlineArguments(ctx.match[1], {
-      history: 'page=1:offset=0',
-      list: ''
-    })
+    const { m: mangaId, l: list, h: history } = parseInlineArguments(
+      ctx.match[1],
+      {
+        h: 'page=1:offset=0',
+        l: '',
+        m: 'none'
+      }
+    )
+
+    if (mangaId === 'none') {
+      return ctx.answerCbQuery('MangaId is not provided', true)
+    }
 
     try {
       const { text, extra } = await mangaView({
-        mangaId: parseInt(args.mangaId),
-        list: args.list,
+        mangaId: parseInt(mangaId),
+        list,
         favorite: false,
         user: ctx.state.user,
-        history: args.history,
+        history: history,
         i18n: ctx.i18n
       })
       await ctx.editMessageText(text, extra)

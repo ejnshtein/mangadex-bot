@@ -11,3 +11,8 @@ export const page = {
 }
 
 export const favorite = (value = true): string => (value ? '💖' : '💔')
+
+export const refresh = (): string => '↻'
+export const back = (): string => '⬅'
+export const next = (): string => '➡'
+export const share = (): string => '☞'
