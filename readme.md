@@ -53,13 +53,22 @@ dcd up -d
 // no alias
 docker-compose -f docker-compose.dev.yml up -d
 ```
-And then
+By doing this you'll start container with nodemon inside it that will restart application when it'll detect changes.  
+Now you have 2 options:
+
+1. run typescript watcher, that'll watch changes in src directory and compile project to dist folder which is watched by nodemon.
+```bash
+yarn watch-ts
+```
+2. use vscode debugger to attach to container, start compilation in the background and you can debug application now. (Or use keyboard shortcut: `CTRL + F5` or `CMD + SHIFT + D` on mac)
+
+To access logs:
 ```bash
 // alias
-dcdlogs mangadex-bot
+dcdlogs
 
 // no alias
-docker-compose -f docker-composer.dev.yml logs -f mangadex-bot
+docker-compose -f docker-composer.dev.yml logs -f
 ```
 
 To stop project
